@@ -3,8 +3,8 @@ var enemy_units = [];
 
 function setup() 
 {
-	createCanvas(600, 600);
-	player_unit = new Unit(0, 0, 1); // Creates the player unit
+	createCanvas(CANVAS_SIZE_X, CANVAS_SIZE_Y);	// Creates the area that the player sees
+	player_unit = new Unit(0, 0, 1); 			// Creates the player unit
 	for (let i = 0; i < 10; i++) 
 	{
 		//TODO: Actual players
@@ -31,22 +31,22 @@ function draw()
 					if(got_hit)
 					{
 						let index = enemy_units.indexOf(enemy);
-						enemy_units.splice(index, 1); //Removes the enemy unit from the array (consequently removeing it from the game) 
+						enemy_units.splice(index, 1); 		//Removes the enemy unit from the array (consequently removeing it from the game) 
 						
 						index = player_unit.shots.indexOf(shot);
 						player_unit.shots.splice(index, 1); //Removes the shot from the array (consequently removeing it from the game) 
 						return;
 					}
 				});
-			if(got_hit){ return; }
+			if(got_hit){ return; } 	// If the enemy got hit we dont want to draw it, because we removed it from the array earlier, so we have to skip that part or we get an error
 			
 			enemy.show(); // Draws the unit
 			if(enemy.shots != undefined)
 			{
-				//Iterate over all the shots of the enemy unit
+				//Iterates over all the shots of the enemy unit
 				enemy.shots.forEach(shot => 
 				{
-					if(shot.ttl == 0) //Check if the shot has expired ( A shot expires when its ttl = 0)
+					if(shot.ttl == 0) //Checks if the shot has expired ( A shot expires when its ttl = 0)
 					{
 						let index = enemy.shots.indexOf(shot);
 						enemy.shots.splice(index, 1); //Removes the shot from the array (consequently removeing it from the game) 
@@ -64,11 +64,11 @@ function draw()
 
 	if(player_unit.shots != undefined)
 	{
-		//Iterate over the shots of the player unit
+		//Iterates over the shots of the player unit
 		player_unit.shots.forEach(shot => 
 			{
 				
-				if(shot.ttl == 0) //Check if the shot has expired ( A shot expires when its ttl = 0)
+				if(shot.ttl == 0) //Checks if the shot has expired ( A shot expires when its ttl = 0)
 				{
 					let index = player_unit.shots.indexOf(shot);
 					player_unit.shots.splice(index, 1); //Removes the shot from the array (consequently removeing it from the game) 

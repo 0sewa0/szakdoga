@@ -1,3 +1,9 @@
+//This files only purpose is to store static values in on place to preseve consistancy and provide a more readable code thats convenient to maintain
+
+//MAP parameters
+const CANVAS_SIZE_X = 600;
+const CANVAS_SIZE_Y = 600; 
+
 //UNIT parameters
 const UNIT_RADIUS = 40;
 const UNIT_BASE_COLOR = 255;

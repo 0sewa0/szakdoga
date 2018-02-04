@@ -1,25 +1,27 @@
 var player_unit;
 var enemy_units = [];
+var border;
 
 function setup() 
 {
 	createCanvas(CANVAS_SIZE_X, CANVAS_SIZE_Y);	// Creates the area that the player sees
+	border = new Border();					// Creates the borders of the map
 	player_unit = new Unit(0, 0, 1); 			// Creates the player unit
 	for (let i = 0; i < 10; i++) 
 	{
 		//TODO: Actual players
 		//Creates the enemy units
-		var r_x = random(-width, width*2);
-		var r_y = random(-height, height*2);
+		var r_x = random(-CANVAS_MAP_X, CANVAS_MAP_X);
+		var r_y = random(-CANVAS_MAP_Y, CANVAS_MAP_Y);
 		enemy_units[i] = new Unit(r_x, r_y, i + 2);
 	}
 }
 
 function draw() 
 {
-	background(0);
+	background(CANVAS_COLOR);
 	translate(width/2 - player_unit.body_position.x, height/2 - player_unit.body_position.y); // Translates the canvas so the player is always in the middle of the screen
-	
+	border.show();
 	//Iterate over all the enemy units
 	enemy_units.forEach(enemy =>  
 		{
@@ -41,6 +43,10 @@ function draw()
 			if(got_hit){ return; } 	// If the enemy got hit we dont want to draw it, because we removed it from the array earlier, so we have to skip that part or we get an error
 			
 			enemy.show(); // Draws the unit
+			if(player_unit.touching(enemy)) // Checks if the player bumped into the enemy 
+			{
+				player_unit.velocity.rotate(PI).setMag(UNIT_BOUNCE_OFF); //Rotates the direction of the players movement making a bounce effect 
+			}
 			if(enemy.shots != undefined)
 			{
 				//Iterates over all the shots of the enemy unit

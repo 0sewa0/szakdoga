@@ -10,49 +10,93 @@ function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR)
     this.body_radius = UNIT_RADIUS;
     this.body_color = color;
 
-    this.velocity_X = 0;
-    this.velocity_Y = 0;
+    this.velocity = createVector(0,0);
     this.friction = UNIT_FRICTION;
     this.movement_speed = UNIT_MOVEMENT_SPEED;
 
+    this.last_shot = 0;
 
     this.show = function() 
     {
         this.draw_body();
+        if(this.last_shot != 0)
+        {
+            this.last_shot--; // FIXME: This should be handled on the server side
+        }
     }
 
     this.move = function()  // Move according the buttons the player pressed
     {
         if(keyIsDown(65))   // move LEFT == A
         {
-            this.velocity_X -= this.movement_speed;
+            this.velocity.x -= this.movement_speed;
         }
         if(keyIsDown(68))   // move RIGHT == D
         {
-            this.velocity_X += this.movement_speed;
+            this.velocity.x += this.movement_speed;
         }
         if(keyIsDown(87))   // move UP == W  
         {
-            this.velocity_Y -= this.movement_speed;
+            this.velocity.y -= this.movement_speed;
         }
         if(keyIsDown(83))   // move DOWN == S
         {
-            this.velocity_Y += this.movement_speed;
+            this.velocity.y += this.movement_speed;
         }
-        this.velocity_X *= this.friction;   // Slow down on the X axis
-        this.velocity_Y *= this.friction;   // Slow down on the Y axis
-        this.body_position.add(createVector(this.velocity_X,this.velocity_Y));  // Move the unit 
+        this.velocity.x *= this.friction;   // Slow down on the X axis
+        this.velocity.y *= this.friction;   // Slow down on the Y axis
+        
+        this.body_position.add(this.velocity);  // Move the unit 
+        this.boundary_check();
+              
+    }
+
+    this.boundary_check = function()
+    {
+        if(this.body_position.x > CANVAS_MAP_X)
+        {
+            this.body_position.x = CANVAS_MAP_X;
+        }
+        if(this.body_position.x < -CANVAS_MAP_X)
+        {
+            this.body_position.x = -CANVAS_MAP_X;
+        }
+        if(this.body_position.y > CANVAS_MAP_Y)
+        {
+            this.body_position.y = CANVAS_MAP_Y;
+        }
+        if(this.body_position.y < -CANVAS_MAP_Y)
+        {
+            this.body_position.y = -CANVAS_MAP_Y;
+        }
     }
 
     this.shoot = function() 
     {
-        this.shots.push(new Shot(this.body_position, this.user)); // Shoot by creating a new shot and adding to the array
+        if(this.last_shot == 0) // Checks if the player is allowed to shoot again
+        {
+            this.shots.push(new Shot(this.body_position, this.user)); // Shoot by creating a new shot and adding to the array
+            this.last_shot = SHOT_COOLDOWN;
+        }
     }
 
     this.get_hit = function(shot) 
     {
         let distance = p5.Vector.dist(this.body_position, shot.position);   // Calculates the distance between the unit and the shot
         if( distance < this.body_radius + shot.radius)                      // If the distance is smaller than the sum of the two objects radii(plural of radius) then the two object intesect
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    this.touching = function(other)
+    {
+        let distance = p5.Vector.dist(this.body_position, other.body_position);   // Calculates the distance between the unit and the other unit
+        if( distance < this.body_radius + other.body_radius)                      // If the distance is smaller than the sum of the two objects radii(plural of radius) then the two object intesect
         {
             return true;
         }

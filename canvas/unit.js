@@ -13,7 +13,7 @@ function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR)
     this.velocity = createVector(0,0);
     this.friction = UNIT_FRICTION;
     this.movement_speed = UNIT_MOVEMENT_SPEED;
-
+    //TODO: Add a trail effect, with an array that stores previous ~5 locations and draws a lighter colored circle at those locations
     this.last_shot = 0;
 
     this.show = function() 

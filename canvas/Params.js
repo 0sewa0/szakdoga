@@ -4,15 +4,20 @@
 const CANVAS_BORDER_COLOR = 'rgb(128, 0, 0)';
 const CANVAS_MAP_X = 1000;
 const CANVAS_MAP_Y = 1000;
-const CANVAS_SIZE_X = 600;
-const CANVAS_SIZE_Y = 600; 
+const CANVAS_SIZE_X = window.innerWidth;
+const CANVAS_SIZE_Y = window.innerHeight; 
 const CANVAS_COLOR = 60; 
+const CANVAS_ZOOM_BASE = 64;
+const CANVAS_ZOOM_MULTIPLIER = 3;
+    //TODO: Add span points
+    //TODO: Add obsticles
+
 
 //UNIT parameters
 const UNIT_RADIUS = 40;
 const UNIT_BASE_COLOR = 'rgb(70, 162, 185)';
 const UNIT_STROKE_WEIGHT = 1;
-const UNIT_FRICTION = 0.6;
+const UNIT_FRICTION = 0.8;
 const UNIT_MOVEMENT_SPEED = 2;
 const UNIT_BOUNCE_OFF = 50;
 

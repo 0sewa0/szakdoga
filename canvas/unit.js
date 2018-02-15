@@ -1,24 +1,27 @@
 
-function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR, trail_color = UNIT_BASE_TRAIL_COLOR) 
+class Unit 
 {
 
-    this.user = user;   // The id of the user controlling this unit
-    this.shots = [];    //All active shots of the unit
-    this.points = 0;    //The points collected during the game
+    constructor(start_x, start_y, user, color = UNIT_BASE_COLOR, trail_color = UNIT_BASE_TRAIL_COLOR)
+    {
+        this.user = user;   // The id of the user controlling this unit
+        this.shots = [];    //All active shots of the unit
+        this.points = 0;    //The points collected during the game
 
-    this.body_position = createVector(start_x, start_y); 
-    this.body_radius = UNIT_RADIUS;
-    this.body_color = color;
+        this.body_position = createVector(start_x, start_y); 
+        this.body_radius = UNIT_RADIUS;
+        this.body_color = color;
 
-    this.velocity = createVector(0,0);
-    this.friction = UNIT_FRICTION;
-    this.movement_speed = UNIT_MOVEMENT_SPEED;
-    this.last_shot = 0;
+        this.velocity = createVector(0,0);
+        this.friction = UNIT_FRICTION;
+        this.movement_speed = UNIT_MOVEMENT_SPEED;
+        this.last_shot = 0;
+        
+            //TODO: Add a trail effect, with an array that stores previous ~5 locations and draws a lighter colored circle at those locations
+        this.trail_color = trail_color;
+    }
     
-        //TODO: Add a trail effect, with an array that stores previous ~5 locations and draws a lighter colored circle at those locations
-    this.trail_color = trail_color;
-
-    this.show = function() 
+    show() 
     {
         this.draw_body();
         if(this.last_shot != 0)
@@ -27,7 +30,7 @@ function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR, trail_color = UNI
         }
     }
 
-    this.move = function()  // Move according the buttons the player pressed
+    move()  // Move according the buttons the player pressed
     {
         if(keyIsDown(65))   // move LEFT == A
         {
@@ -52,19 +55,19 @@ function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR, trail_color = UNI
               
     }
 
-    this.draw_trail = function()
+    draw_trail()
     {
         push();
         noStroke();
         fill(this.trail_color);
         for (let index = 1; index < 6; index++) 
         {
-            ellipse(this.body_position.x - this.velocity.x * 2 * index , this.body_position.y - this.velocity.y * 2 *index, (this.body_radius * 2) - (index * 10), (this.body_radius * 2) - (index * 10));    
+            ellipse(this.body_position.x - this.velocity.x * index , this.body_position.y - this.velocity.y * index, (this.body_radius * 2) - (index * 12), (this.body_radius * 2) - (index * 12));    
         }
         pop();
     }
 
-    this.boundary_check = function()
+    boundary_check()
     {
         if(this.body_position.x > CANVAS_MAP_X)
         {
@@ -84,7 +87,7 @@ function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR, trail_color = UNI
         }
     }
 
-    this.shoot = function() 
+    shoot() 
     {
         if(this.last_shot == 0) // Checks if the player is allowed to shoot again
         {
@@ -93,7 +96,7 @@ function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR, trail_color = UNI
         }
     }
 
-    this.get_hit = function(shot) 
+    get_hit(shot) 
     {
         let distance = p5.Vector.dist(this.body_position, shot.position);   // Calculates the distance between the unit and the shot
         if( distance < this.body_radius + shot.radius)                      // If the distance is smaller than the sum of the two objects radii(plural of radius) then the two object intesect
@@ -106,7 +109,7 @@ function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR, trail_color = UNI
         }
     }
 
-    this.touching = function(other)
+    touching(other)
     {
         let distance = p5.Vector.dist(this.body_position, other.body_position);   // Calculates the distance between the unit and the other unit
         if( distance < this.body_radius + other.body_radius)                      // If the distance is smaller than the sum of the two objects radii(plural of radius) then the two object intesect
@@ -119,7 +122,7 @@ function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR, trail_color = UNI
         }
     }
     
-    this.draw_body = function()
+    draw_body()
     {
         this.draw_trail();
         push();                     // The options which determan the way we draw objects are stored globaly, and we want to 'protect' them from so we store them in a stack temporarly. 

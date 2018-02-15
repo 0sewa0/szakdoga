@@ -6,8 +6,6 @@ let zoom = 1;
 function setup() 
 {
 	createCanvas(CANVAS_SIZE_X, CANVAS_SIZE_Y);	// Creates the area that the player sees
-	border = new Border();						// Creates the borders of the map
-	obstacle = new Obstacle();
 	player_unit = new Unit(0, 0, 1); 			// Creates the player unit
 	for (let i = 0; i < 10; i++) 
 	{
@@ -28,8 +26,8 @@ function draw()
 	zoom = lerp(zoom, update_zoom, 0.2);	// This makes the zoom effect smoother with linear interpolation
 	scale(zoom);  							// Scales (zooms in) according the player points, making the game harder
 	translate(- player_unit.body_position.x, - player_unit.body_position.y); // *
-	border.show();
-	//TODO:obstacle.show();
+	show_borders();	//Draw borders
+	show_obstacles();
 	//Iterate over all the enemy units
 	enemy_units.forEach(enemy =>  
 		{
@@ -99,3 +97,19 @@ function mousePressed() // If a button on the mouse is pressed this function tri
 	player_unit.shoot();
 }
 
+function show_obstacles()
+{
+	push();
+	noStroke();
+    fill(CANVAS_OBSTACLES_COLOR);
+	CANVAS_OBSTACLES.forEach(obstacle => {quad(obstacle.x1, obstacle.y1, obstacle.x2, obstacle.y2, obstacle.x3, obstacle.y3, obstacle.x4, obstacle.y4);});
+	pop();
+}
+function show_borders()
+{
+	push();
+	noStroke();
+	fill(CANVAS_BORDER_COLOR);
+	CANVAS_BORDERS.forEach( border => {quad(border.x1, border.y1, border.x2, border.y2, border.x3, border.y3, border.x4, border.y4);}) 
+	pop();
+}

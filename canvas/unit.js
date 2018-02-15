@@ -1,5 +1,5 @@
 
-function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR) 
+function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR, trail_color = UNIT_BASE_TRAIL_COLOR) 
 {
 
     this.user = user;   // The id of the user controlling this unit
@@ -13,8 +13,10 @@ function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR)
     this.velocity = createVector(0,0);
     this.friction = UNIT_FRICTION;
     this.movement_speed = UNIT_MOVEMENT_SPEED;
-    //TODO: Add a trail effect, with an array that stores previous ~5 locations and draws a lighter colored circle at those locations
     this.last_shot = 0;
+    
+        //TODO: Add a trail effect, with an array that stores previous ~5 locations and draws a lighter colored circle at those locations
+    this.trail_color = trail_color;
 
     this.show = function() 
     {
@@ -45,10 +47,21 @@ function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR)
         }
         this.velocity.x *= this.friction;   // Slow down on the X axis
         this.velocity.y *= this.friction;   // Slow down on the Y axis
-        
         this.body_position.add(this.velocity);  // Move the unit 
         this.boundary_check();
               
+    }
+
+    this.draw_trail = function()
+    {
+        push();
+        noStroke();
+        fill(this.trail_color);
+        for (let index = 1; index < 6; index++) 
+        {
+            ellipse(this.body_position.x - this.velocity.x * 2 * index , this.body_position.y - this.velocity.y * 2 *index, (this.body_radius * 2) - (index * 10), (this.body_radius * 2) - (index * 10));    
+        }
+        pop();
     }
 
     this.boundary_check = function()
@@ -75,7 +88,7 @@ function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR)
     {
         if(this.last_shot == 0) // Checks if the player is allowed to shoot again
         {
-            this.shots.push(new Shot(this.body_position, this.user)); // Shoot by creating a new shot and adding to the array
+            this.shots.push(new Shot(this.body_position, this.user)); // Shoot by creating a new shot and adding it to the array
             this.last_shot = SHOT_COOLDOWN;
         }
     }
@@ -108,11 +121,13 @@ function Unit(start_x, start_y, user, color = UNIT_BASE_COLOR)
     
     this.draw_body = function()
     {
+        this.draw_trail();
         push();                     // The options which determan the way we draw objects are stored globaly, and we want to 'protect' them from so we store them in a stack temporarly. 
         stroke(this.body_color);    // Then we draw our special object with different options
         strokeWeight(UNIT_STROKE_WEIGHT);
         fill(this.body_color);
         ellipse(this.body_position.x, this.body_position.y, this.body_radius * 2, this.body_radius * 2);
         pop();                      // Then we restore the options to what they were before
+        
     }
 }

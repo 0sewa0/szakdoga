@@ -10,12 +10,15 @@ const CANVAS_COLOR = 60;
 const CANVAS_ZOOM_BASE = 64;
 const CANVAS_ZOOM_MULTIPLIER = 3;
     //TODO: Add span points
-    //TODO: Add obsticles
+    //TODO: Add obsticles 
+const CANVAS_OBSTACLES_HEIGHT = 200; 
+const CANVAS_OBSTACLES_WIDTH = 500;
 
 
 //UNIT parameters
 const UNIT_RADIUS = 40;
 const UNIT_BASE_COLOR = 'rgb(70, 162, 185)';
+const UNIT_BASE_TRAIL_COLOR = 'rgb(70, 120, 185)';
 const UNIT_STROKE_WEIGHT = 1;
 const UNIT_FRICTION = 0.8;
 const UNIT_MOVEMENT_SPEED = 2;
@@ -27,4 +30,4 @@ const SHOT_SPEED = 20;
 const SHOT_BASE_COLOR = 'rgb(54, 140, 226)';
 const SHOT_STROKE_WEIGHT = 1;
 const SHOT_COOLDOWN = 100;   // The player can only shoot once in a period of time
-const SHOT_TTL = 50;         // TIME TO LIVE
+const SHOT_TTL = 30;         // TIME TO LIVE

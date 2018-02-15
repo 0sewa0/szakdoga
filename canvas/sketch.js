@@ -7,6 +7,7 @@ function setup()
 {
 	createCanvas(CANVAS_SIZE_X, CANVAS_SIZE_Y);	// Creates the area that the player sees
 	border = new Border();						// Creates the borders of the map
+	obstacle = new Obstacle();
 	player_unit = new Unit(0, 0, 1); 			// Creates the player unit
 	for (let i = 0; i < 10; i++) 
 	{
@@ -28,7 +29,7 @@ function draw()
 	scale(zoom);  							// Scales (zooms in) according the player points, making the game harder
 	translate(- player_unit.body_position.x, - player_unit.body_position.y); // *
 	border.show();
-	
+	//TODO:obstacle.show();
 	//Iterate over all the enemy units
 	enemy_units.forEach(enemy =>  
 		{
@@ -74,7 +75,6 @@ function draw()
 		
 	player_unit.move(); // Moves the player unit according to the pushed buttons.
 	player_unit.show(); // Draws the player unit
-
 	if(player_unit.shots != undefined)
 	{
 		//Iterates over the shots of the player unit

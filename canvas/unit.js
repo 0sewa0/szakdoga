@@ -17,7 +17,6 @@ class Unit
         this.movement_speed = UNIT_MOVEMENT_SPEED;
         this.last_shot = 0;
         
-            //TODO: Add a trail effect, with an array that stores previous ~5 locations and draws a lighter colored circle at those locations
         this.trail_color = trail_color;
     }
     
@@ -67,7 +66,7 @@ class Unit
         pop();
     }
 
-    boundary_check()
+    boundary_check()        //TODO: Expand it to work with obstacles 
     {
         if(this.body_position.x > CANVAS_MAP_X)
         {

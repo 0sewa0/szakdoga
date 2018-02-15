@@ -26,8 +26,9 @@ function draw()
 	zoom = lerp(zoom, update_zoom, 0.2);	// This makes the zoom effect smoother with linear interpolation
 	scale(zoom);  							// Scales (zooms in) according the player points, making the game harder
 	translate(- player_unit.body_position.x, - player_unit.body_position.y); // *
-	show_borders();	//Draw borders
-	show_obstacles();
+	show_borders();		//Draws borders
+	show_obstacles();	//Draws obstacles
+
 	//Iterate over all the enemy units
 	enemy_units.forEach(enemy =>  
 		{
@@ -70,7 +71,7 @@ function draw()
 				});
 			}
 		});
-		
+
 	player_unit.move(); // Moves the player unit according to the pushed buttons.
 	player_unit.show(); // Draws the player unit
 	if(player_unit.shots != undefined)

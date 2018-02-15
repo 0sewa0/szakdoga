@@ -4,6 +4,7 @@
 const UNIT_RADIUS = 40;
 const UNIT_BASE_COLOR = 'rgb(255, 214, 138)';
 const UNIT_BASE_TRAIL_COLOR = 'rgb(102, 217, 237)';
+const UNIT_SHIELD_COLOR = 'rgb(97, 175, 239)'; // TODO: Add block(shield) skill
 const UNIT_STROKE_WEIGHT = 1;
 const UNIT_FRICTION = 0.8;
 const UNIT_MOVEMENT_SPEED = 2;

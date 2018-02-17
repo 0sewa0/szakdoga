@@ -16,6 +16,17 @@ class Shot
         this.position.add(this.velocity);   //Move the shot
     }
 
+    wall_check()
+    {
+        CANVAS_OBSTACLES.forEach(obstacle => 
+            {
+                if(this.position.x > obstacle.x1 - SHOT_RADIUS && this.position.x < obstacle.x4 + SHOT_RADIUS && this.position.y < obstacle.y1 + SHOT_RADIUS && this.position.y > obstacle.y2 - SHOT_RADIUS)
+                {
+                    this.ttl = 0; 
+                    return true;
+                }
+            });
+    }
     render()
     {
         push();             // The options which determan the way we draw objects are stored globaly, and we want to 'protect' them from so we store them in a stack temporarly.
@@ -28,6 +39,7 @@ class Shot
 
     show()
     {
+        this.wall_check();
         this.update();
         this.render();
         this.ttl--;

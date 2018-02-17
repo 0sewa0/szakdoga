@@ -2,18 +2,26 @@ let player_unit;
 let enemy_units = [];
 let border;
 let zoom = 1;
+let span = [];
 
 function setup() 
 {
 	createCanvas(CANVAS_SIZE_X, CANVAS_SIZE_Y);	// Creates the area that the player sees
-	player_unit = new Unit(0, 0, 1); 			// Creates the player unit
-	for (let i = 0; i < 10; i++) 
+	span = Array(12).fill().map((_, i) => 
+	{//FIXME: Move this to Params.js somehow
+		let vector = createVector(UNIT_RADIUS * 4, 0);
+		vector = vector.rotate((i + 1) * ((2 * PI) / 12));
+		return vector;
+	});
+	//FIXME: This should be handled by the server
+	player_unit = new Unit(span[0].x, span[0].y, 1); 	// Creates the player unit
+	for (let i = 1; i < 12; i++) 
 	{
 		//TODO: Actual players
 		//Creates the enemy units
-		var r_x = random(-CANVAS_MAP_X, CANVAS_MAP_X);
-		var r_y = random(-CANVAS_MAP_Y, CANVAS_MAP_Y);
-		enemy_units[i] = new Unit(r_x, r_y, i + 2);
+		//var r_x = random(-CANVAS_MAP_X, CANVAS_MAP_X);
+		//var r_y = random(-CANVAS_MAP_Y, CANVAS_MAP_Y);
+		enemy_units[i] = new Unit(span[i].x, span[i].y, i + 2);
 	}
 }
 
@@ -59,7 +67,7 @@ function draw()
 				//Iterates over all the shots of the enemy unit
 				enemy.shots.forEach(shot => 
 				{
-					if(shot.ttl == 0) 					//Checks if the shot has expired ( A shot expires when its ttl = 0)
+					if(shot.ttl <= 0) 					//Checks if the shot has expired ( A shot expires when its ttl = 0)
 					{
 						let index = enemy.shots.indexOf(shot);
 						enemy.shots.splice(index, 1); 	//Removes the shot from the array (consequently removeing it from the game) 
@@ -80,7 +88,7 @@ function draw()
 		player_unit.shots.forEach(shot => 
 			{
 				
-				if(shot.ttl == 0) 						//Checks if the shot has expired ( A shot expires when its ttl = 0)
+				if(shot.ttl <= 0) 						//Checks if the shot has expired ( A shot expires when its ttl = 0)
 				{
 					let index = player_unit.shots.indexOf(shot);
 					player_unit.shots.splice(index, 1); //Removes the shot from the array (consequently removeing it from the game) 

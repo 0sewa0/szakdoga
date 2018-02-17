@@ -11,7 +11,7 @@ class Unit
         this.body_radius = UNIT_RADIUS;
         this.body_color = color;
 
-        this.velocity = createVector(0,0);
+        this.velocity = createVector(0, 0);
         this.friction = UNIT_FRICTION;
         this.movement_speed = UNIT_MOVEMENT_SPEED;
         this.last_shot = 0;
@@ -88,9 +88,16 @@ class Unit
                 if(this.body_position.x > obstacle.x1 - UNIT_RADIUS + 10 && this.body_position.x < obstacle.x4 + UNIT_RADIUS - 10 && this.body_position.y < obstacle.y1 + UNIT_RADIUS - 10 && this.body_position.y > obstacle.y2 - UNIT_RADIUS + 10)
                 {
                     //This 'line' of code makes it possible that when you touch the border of an obstacle, it will stop you while having a smooth rubber like effect  
-                    (this.body_position.x < obstacle.x1) ? this.body_position.x =lerp(this.body_position.x, obstacle.x1 - UNIT_RADIUS, 0.2) : (this.body_position.x > obstacle.x4) ? this.body_position.x =lerp(this.body_position.x, obstacle.x4 + UNIT_RADIUS, 0.2) : (this.body_position.y > obstacle.y1) ? this.body_position.y = lerp(this.body_position.y, obstacle.y1 + UNIT_RADIUS, 0.2) : (this.body_position.y < obstacle.y2) ? this.body_position.y =lerp(this.body_position.y, obstacle.y2 - UNIT_RADIUS, 0.2) : false;
+                    (this.body_position.x < obstacle.x1) ? this.body_position.x = lerp(this.body_position.x, obstacle.x1 - UNIT_RADIUS, 0.2) : (this.body_position.x > obstacle.x4) ? this.body_position.x = lerp(this.body_position.x, obstacle.x4 + UNIT_RADIUS, 0.2) : (this.body_position.y > obstacle.y1) ? this.body_position.y = lerp(this.body_position.y, obstacle.y1 + UNIT_RADIUS, 0.2) : (this.body_position.y < obstacle.y2) ? this.body_position.y = lerp(this.body_position.y, obstacle.y2 - UNIT_RADIUS, 0.2) : false;
                 }
             });
+        let distance_from_center = p5.Vector.dist(this.body_position, createVector(CANVAS_OBSTACLES_CENTER_PIECE.x, CANVAS_OBSTACLES_CENTER_PIECE.y));
+        if(distance_from_center < this.body_radius + CANVAS_OBSTACLES_CENTER_PIECE.r1 / 2)
+        {
+            let angle = this.body_position.heading();
+            let push = p5.Vector.fromAngle(angle).mult(3 * CANVAS_OBSTACLES_CENTER_PIECE.r1 / 5);
+            this.body_position = this.body_position.lerp(push, 0.2);
+        }
     }
 
     shoot() 

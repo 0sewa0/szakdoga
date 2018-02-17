@@ -9,7 +9,6 @@ const UNIT_STROKE_WEIGHT = 1;
 const UNIT_FRICTION = 0.8;
 const UNIT_MOVEMENT_SPEED = 2;
 const UNIT_BOUNCE_OFF = 50;
-const UNIT_OBSTACLE_BOUNCE_OFF = 15;
 
 //SHOT parameters
 const SHOT_RADIUS = 7;
@@ -28,8 +27,6 @@ const CANVAS_SIZE_Y = window.innerHeight;
 const CANVAS_COLOR = 'rgb(69, 76, 89)'; 
 const CANVAS_ZOOM_BASE = 64;
 const CANVAS_ZOOM_MULTIPLIER = 3;
-
-//TODO: Add span points
 
 const CANVAS_BORDER_COLOR = 'rgb(224, 108, 117)';
 const CANVAS_BORDERS =
@@ -108,8 +105,8 @@ const CANVAS_OBSTACLES_CENTER_PIECE =
 {
     x: 0,
     y: 0,
-    r1: CANVAS_OBSTACLES_MAP_RATIO_X * 3,
-    r2: CANVAS_OBSTACLES_MAP_RATIO_Y * 3 
+    r1: CANVAS_OBSTACLES_MAP_RATIO_X * 4,
+    r2: CANVAS_OBSTACLES_MAP_RATIO_Y * 4 
 } 
 const CANVAS_OBSTACLES = 
 [
@@ -226,3 +223,11 @@ const CANVAS_OBSTACLES =
         y4 : -CANVAS_MAP_Y + CANVAS_OBSTACLES_MAP_RATIO_Y * 7
     }
 ]
+//TODO: Add span points 
+/*
+const CANVAS_SPAN_POINTS = Array(12).fill().map((_, i) => 
+{
+    let vector = createVector(UNIT_RADIUS, 0);
+    vector = vector.rotate(2*PI / i);
+    return vector;
+});*/

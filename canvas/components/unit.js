@@ -1,4 +1,3 @@
-
 class Unit 
 {
 
@@ -66,7 +65,7 @@ class Unit
         pop();
     }
 
-    boundary_check()        //TODO: Expand it to work with obstacles 
+    boundary_check()        //TODO: Expand it to work with the center piece
     {
         if(this.body_position.x > CANVAS_MAP_X)
         {
@@ -84,6 +83,14 @@ class Unit
         {
             this.body_position.y = -CANVAS_MAP_Y;
         }
+        CANVAS_OBSTACLES.forEach(obstacle => 
+            {
+                if(this.body_position.x > obstacle.x1 - UNIT_RADIUS + 10 && this.body_position.x < obstacle.x4 + UNIT_RADIUS - 10 && this.body_position.y < obstacle.y1 + UNIT_RADIUS - 10 && this.body_position.y > obstacle.y2 - UNIT_RADIUS + 10)
+                {
+                    //This 'line' of code makes it possible that when you touch the border of an obstacle, it will stop you while having a smooth rubber like effect  
+                    (this.body_position.x < obstacle.x1) ? this.body_position.x =lerp(this.body_position.x, obstacle.x1 - UNIT_RADIUS, 0.2) : (this.body_position.x > obstacle.x4) ? this.body_position.x =lerp(this.body_position.x, obstacle.x4 + UNIT_RADIUS, 0.2) : (this.body_position.y > obstacle.y1) ? this.body_position.y = lerp(this.body_position.y, obstacle.y1 + UNIT_RADIUS, 0.2) : (this.body_position.y < obstacle.y2) ? this.body_position.y =lerp(this.body_position.y, obstacle.y2 - UNIT_RADIUS, 0.2) : false;
+                }
+            });
     }
 
     shoot() 

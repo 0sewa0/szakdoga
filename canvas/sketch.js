@@ -104,6 +104,7 @@ function show_obstacles()
 	noStroke();
     fill(CANVAS_OBSTACLES_COLOR);
 	CANVAS_OBSTACLES.forEach(obstacle => {quad(obstacle.x1, obstacle.y1, obstacle.x2, obstacle.y2, obstacle.x3, obstacle.y3, obstacle.x4, obstacle.y4);});
+	ellipse(CANVAS_OBSTACLES_CENTER_PIECE.x, CANVAS_OBSTACLES_CENTER_PIECE.y, CANVAS_OBSTACLES_CENTER_PIECE.r1, CANVAS_OBSTACLES_CENTER_PIECE.r2);
 	pop();
 }
 function show_borders()

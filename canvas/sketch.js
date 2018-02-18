@@ -47,12 +47,14 @@ function draw()
 					got_hit = enemy.get_hit(shot) 			// Check if the given shot hit the enemy
 					if(got_hit)
 					{
-						let index = enemy_units.indexOf(enemy);
-						enemy_units.splice(index, 1); 		//Removes the enemy unit from the array (consequently removeing it from the game) 
-						
+						if(!enemy.shield)
+						{
+							let index = enemy_units.indexOf(enemy);
+							enemy_units.splice(index, 1); 		//Removes the enemy unit from the array (consequently removeing it from the game)
+							player_unit.points += 1; 
+						}	
 						index = player_unit.shots.indexOf(shot);
 						player_unit.shots.splice(index, 1); //Removes the shot from the array (consequently removeing it from the game) 
-						player_unit.points += 1;
 						return;
 					}
 				});

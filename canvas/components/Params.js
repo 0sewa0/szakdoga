@@ -4,11 +4,16 @@
 const UNIT_RADIUS = 40;
 const UNIT_BASE_COLOR = 'rgb(255, 214, 138)';
 const UNIT_BASE_TRAIL_COLOR = 'rgb(102, 217, 237)';
-const UNIT_SHIELD_COLOR = 'rgb(97, 175, 239)'; // TODO: Add block(shield) skill
 const UNIT_STROKE_WEIGHT = 1;
 const UNIT_FRICTION = 0.8;
 const UNIT_MOVEMENT_SPEED = 2;
 const UNIT_BOUNCE_OFF = 50;
+
+const UNIT_SHIELD_COLOR = 'rgb(97, 175, 239)'; // FIXME: Tweek the timing
+const UNIT_SHIELD_CHARGE = 20;
+const UNIT_SHIELD_CHARGE_RATE = 0.1;
+const UNIT_SHIELD_CHARGE_LOSS = 1;
+const UNIT_SHIELD_STROKE_WEIGHT = 10;
 
 //SHOT parameters
 const SHOT_RADIUS = 7;
@@ -223,7 +228,7 @@ const CANVAS_OBSTACLES =
         y4 : -CANVAS_MAP_Y + CANVAS_OBSTACLES_MAP_RATIO_Y * 7
     }
 ]
-//TODO: Add span points 
+
 /*
 const CANVAS_SPAN_POINTS = Array(12).fill().map((_, i) => 
 {

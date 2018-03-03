@@ -1,0 +1,21 @@
+{
+  "name": "boop",
+  "version": "1.0.0",
+  "description": "Szakdoga",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://s_e_w_a@bitbucket.org/s_e_w_a/boop.git"
+  },
+  "author": "Marcell Sevcsik",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/s_e_w_a/boop#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "socket.io": "^2.0.4"
+  }
+}

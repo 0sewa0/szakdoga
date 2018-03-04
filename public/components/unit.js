@@ -1,9 +1,10 @@
 class Unit
 {
 
-    constructor(start_x, start_y, user, color = UNIT_BASE_COLOR, trail_color = UNIT_BASE_TRAIL_COLOR)
+    constructor(start_x, start_y, user, id, color = UNIT_BASE_COLOR, trail_color = UNIT_BASE_TRAIL_COLOR)
     {
         this.user = user;   // The id of the user controlling this unit
+        this.id = id;
         this.shots = [];    //All active shots of the unit
         this.points = 0;    //The points collected during the game
 

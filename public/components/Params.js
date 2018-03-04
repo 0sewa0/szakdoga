@@ -21,7 +21,7 @@ const SHOT_SPEED = 20;
 const SHOT_BASE_COLOR = 'rgb(181, 232, 144)';
 const SHOT_STROKE_WEIGHT = 1;
 const SHOT_COOLDOWN = 100;   // The player can only shoot once in a period of time
-const SHOT_TTL = 30;         // TIME TO LIVE
+const SHOT_TTL = 20;         // TIME TO LIVE
 
 
 //MAP parameters

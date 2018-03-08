@@ -152,8 +152,10 @@ class Unit
     {
         if(this.last_shot == 0)
         {
-            this.shots.push(new Shot(this.body_position, this.user));
+            let new_shot = new Shot(this.body_position, this.user);
+            this.shots.push(new_shot);
             this.last_shot = SHOT_COOLDOWN;
+            return new_shot;
         }
     }
 

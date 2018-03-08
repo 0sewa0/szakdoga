@@ -4,6 +4,7 @@ let border;
 let zoom = 1;
 let span = [];
 
+let shots_to_send = [];
 let socket;
 
 function setup()
@@ -105,6 +106,7 @@ function draw()
 					{
 						let index = player_unit.shots.indexOf(shot);
 						player_unit.shots.splice(index, 1); //Removes the shot from the array (consequently removeing it from the game)
+						shots_to_send.pop();
 					}
 					else
 					{
@@ -118,14 +120,26 @@ function draw()
 				pos_y: player_unit.body_position.y,
 				vel_x: player_unit.velocity.x,
 				vel_y: player_unit.velocity.y,
-				shots: '' //TODO: / FIXME: Rework how shots are stored, currently it would be a pain to send them back and forth
+				shots: shots_to_send //TODO: / FIXME: Rework how shots are stored, currently it would be a pain to send them back and forth
 			});
 	}
 }
 
 function mousePressed() // If a button on the mouse is pressed this function triggers
 {
-	player_unit.shoot();
+	let shot = player_unit.shoot();
+	if(shot)
+	{
+		shots_to_send.push(
+			{
+				user: shot.user,
+				pos_x: shot.position.x,
+				pos_y: shot.position.y,
+				ttl : shot.ttl,
+				vel_x: shot.velocity.x,
+				vel_y: shot.velocity.y
+			});
+	}
 }
 
 function show_obstacles()

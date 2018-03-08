@@ -41,7 +41,7 @@ class Shot
 
 let game_state = {players, shots}
 
-setInterval(heartbeat, 1000);
+setInterval(heartbeat, 16.67);
 
 function heartbeat()
 {

@@ -6,6 +6,7 @@ class Unit
         this.user = user;   // The id of the user controlling this unit
         this.id = id;
         this.shots = [];    //All active shots of the unit
+        this.shot_id_counter = 0;
         this.points = 0;    //The points collected during the game
 
         this.body_position = createVector(start_x, start_y);
@@ -152,7 +153,7 @@ class Unit
     {
         if(this.last_shot == 0)
         {
-            let new_shot = new Shot(this.body_position, this.user);
+            let new_shot = new Shot(this.body_position, this.user, this.shot_id_counter++);
             this.shots.push(new_shot);
             this.last_shot = SHOT_COOLDOWN;
             return new_shot;

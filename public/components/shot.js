@@ -1,9 +1,9 @@
 class Shot
 {
-    constructor(start, user, color = SHOT_BASE_COLOR)
+    constructor(start, user, id, color = SHOT_BASE_COLOR)
     {
         this.user = user;   // The id of the user that this bullet belongs to
-
+        this.id = id,
         this.position = start.copy();
         this.radius = SHOT_RADIUS;
         this.color = color;
@@ -30,6 +30,7 @@ class Shot
         if(distance_from_center < this.radius + CANVAS_OBSTACLES_CENTER_PIECE.r1 / 2) // If the distance is smaller than the sum of the two objects radii(plural of radius) then the two object intesect
         {
             this.ttl = 0;
+            return true;
         }
     }
     render()

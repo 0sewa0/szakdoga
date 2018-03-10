@@ -17,8 +17,38 @@ function setup()
 	socket.on('heartbeat',
 		function(data)
 		{
-			//TODO: Update the game state according to the data
-			console.log(data);
+			data.players.forEach( player =>
+				{
+					if(player.id != player_unit.id)
+					{
+						let enemy = enemy_units.find( e => e.id == player.id );
+						if(enemy)
+						{
+							enemy.body_position.x = player.position_x;
+							enemy.body_position.y = player.position_y;
+							enemy.velocity.x = player.velocity_x;
+							enemy.velocity.y = player.velocity_y;
+						}
+						else
+						{
+							enemy_units.push( new Unit(player.position_x, player.position_y, player.user, player.id));
+						}
+					}
+				});
+			data.shots.forEach( shot =>
+				{
+					if(shot.user != player_unit.user)
+					{
+						let owner = enemy_units.find( e => e.user == shot.user );
+						let enemy_shot = owner.shots.find( s => s.id == shot.id );
+						if(enemy_shot)
+						{
+							enemy_shot.position.x = shot.position_x;
+							enemy_shot.position.y = shot.position_y;
+							enemy_shot.ttl = shot.ttl;
+						}
+					}
+				});
 		});
 	socket.on('span',
 		function(data)
@@ -104,13 +134,15 @@ function draw()
 
 					if(shot.ttl <= 0) 						//Checks if the shot has expired ( A shot expires when its ttl = 0)
 					{
-						let index = player_unit.shots.indexOf(shot);
+						let index = shots_to_send.indexOf(shots_to_send.find( s => s.id == shot.id ));
+						shots_to_send.splice(index, 1);
+						index = player_unit.shots.indexOf(shot);
 						player_unit.shots.splice(index, 1); //Removes the shot from the array (consequently removeing it from the game)
-						shots_to_send.pop();
 					}
 					else
 					{
 						shot.show();
+						shots_to_send.find( s => s.id == shot.id ).ttl = shot.ttl;
 					}
 				});
 		}
@@ -133,11 +165,12 @@ function mousePressed() // If a button on the mouse is pressed this function tri
 		shots_to_send.push(
 			{
 				user: shot.user,
+				id: shot.id,
 				pos_x: shot.position.x,
 				pos_y: shot.position.y,
 				ttl : shot.ttl,
-				vel_x: shot.velocity.x,
-				vel_y: shot.velocity.y
+				vel_x: shot.velocity.x,	// Not used at the moment
+				vel_y: shot.velocity.y	// Not used at the moment
 			});
 	}
 }

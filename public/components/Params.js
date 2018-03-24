@@ -5,9 +5,9 @@ const UNIT_RADIUS = 40;
 const UNIT_BASE_COLOR = 'rgb(255, 214, 138)';
 const UNIT_BASE_TRAIL_COLOR = 'rgb(102, 217, 237)';
 const UNIT_STROKE_WEIGHT = 1;
-const UNIT_FRICTION = 0.8;
-const UNIT_MOVEMENT_SPEED = 2;
-const UNIT_BOUNCE_OFF = 25;
+const UNIT_FRICTION = 0.88;
+const UNIT_MOVEMENT_SPEED = 1;
+const UNIT_BOUNCE_OFF = 2;
 
 const UNIT_SHIELD_COLOR = 'rgb(97, 175, 239)';
 const UNIT_SHIELD_CHARGE = 20;
@@ -226,7 +226,7 @@ const CANVAS_OBSTACLES = [
     }
 ]
 
-const CANVAS_SPAN_POINTS = function () {
+const CANVAS_SPAWN_POINTS = function () {
     return Array(12).fill().map((_, i) => {
         let vector = createVector(UNIT_RADIUS * 4, 0);
         vector = vector.rotate((i + 1) * ((2 * PI) / 12));

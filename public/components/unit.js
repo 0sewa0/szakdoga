@@ -1,7 +1,8 @@
 class Unit {
 
-    constructor(startX, startY, user, id, color = UNIT_BASE_COLOR, trailColor = UNIT_BASE_TRAIL_COLOR) {
+    constructor(startX, startY, user, id, spawn, color = UNIT_BASE_COLOR, trailColor = UNIT_BASE_TRAIL_COLOR) {
         this.user = user; // The id of the user controlling this unit
+        this.spawn = spawn;
         this.id = id;
         this.shots = []; //All active shots of the unit
         this.shotIdCounter = 0;
@@ -36,21 +37,27 @@ class Unit {
      * Calls for the boundary check
     */
     move() {
+
+        let keysDown = 0;
         if (keyIsDown(65)) // LEFT == A
         {
-            this.velocity.x -= UNIT_MOVEMENT_SPEED;
+            keysDown++;
+            this.velocity.x -= UNIT_MOVEMENT_SPEED / keysDown;
         }
         if (keyIsDown(68)) // RIGHT == D
         {
-            this.velocity.x += UNIT_MOVEMENT_SPEED;
+            keysDown++;
+            this.velocity.x += UNIT_MOVEMENT_SPEED / keysDown;
         }
         if (keyIsDown(87)) // UP == W
         {
-            this.velocity.y -= UNIT_MOVEMENT_SPEED;
+            keysDown++;
+            this.velocity.y -= UNIT_MOVEMENT_SPEED / keysDown;
         }
         if (keyIsDown(83)) // DOWN == S
         {
-            this.velocity.y += UNIT_MOVEMENT_SPEED;
+            keysDown++;
+            this.velocity.y += UNIT_MOVEMENT_SPEED / keysDown;
         }
         (keyIsDown(32) && this.shieldCharge > 0 && this.shieldFull) ? this.shieldOn(): this.shieldOff();
 
@@ -68,8 +75,8 @@ class Unit {
         push();
         noStroke();
         fill(this.trailColor);
-        for (let index = 1; index < 6; index++) {
-            ellipse(this.bodyPosition.x - this.velocity.x * index, this.bodyPosition.y - this.velocity.y * index, (UNIT_RADIUS * 2) - (index * 12), (UNIT_RADIUS * 2) - (index * 12));
+        for (let index = 1; index < 4; index++) {
+            ellipse(this.bodyPosition.x - this.velocity.x * index, this.bodyPosition.y - this.velocity.y * index, (UNIT_RADIUS * 2) - (index * 4.5), (UNIT_RADIUS * 2) - (index * 4.5));
         }
         pop();
     }
@@ -80,11 +87,11 @@ class Unit {
      */
     shieldOn() {
         this.shield = true;
-        this.shieldCharge -= UNIT_SHIELDCHARGE_LOSS;
+        this.shieldCharge -= UNIT_SHIELD_CHARGE_LOSS;
     }
 
     /**
-     * Turns the shield of
+     * Turns the shield off
      * Recharges the shield
      */
     shieldOff() {

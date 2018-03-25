@@ -2,6 +2,7 @@ let playerUnit;
 let inGame = false;
 
 let enemyUnits = [];
+let leaderboard = [];
 let border;
 let zoom = 1;
 let spawn = [];
@@ -24,6 +25,7 @@ function setup() {
 						enemy.bodyPosition.y = player.positionY;
 						enemy.velocity.x = player.velocityX;
 						enemy.velocity.y = player.velocityY;
+						enemy.score = player.score;
 						enemy.shield = player.shield;
 					} else {
 						enemyUnits.push(new Unit(player.positionX, player.positionY, player.user, player.id, player.spawn));
@@ -47,6 +49,7 @@ function setup() {
 					}
 				}
 			});
+			leaderboard = data.leaderboard;
 		});
 
 	socket.on('spawn',
@@ -67,7 +70,7 @@ function setup() {
 			inGame = false;
 			playerUnit.bodyPosition.x = spawn[playerUnit.spawn].x;
 			playerUnit.bodyPosition.y = spawn[playerUnit.spawn].y;
-			playerUnit.points = 0;
+			playerUnit.score = 0;
 			//TODO: Add a respawn option
 			//TODO: Add score handling on the server and client side
 		});
@@ -84,9 +87,9 @@ function draw() {
 	if (playerUnit) {
 		background(CANVAS_COLOR);
 		translate(width / 2, height / 2); // Translates the canvas so the player is always in the middle of the screen (the other translate* command is also needed for this to happen)
-		let updatedZoom = (CANVAS_ZOOM_BASE + playerUnit.points * CANVAS_ZOOM_MULTIPLIER) / UNIT_RADIUS;
+		let updatedZoom = (CANVAS_ZOOM_BASE + playerUnit.score * CANVAS_ZOOM_MULTIPLIER) / UNIT_RADIUS;
 		zoom = lerp(zoom, updatedZoom, 0.2); // This makes the zoom effect smoother with linear interpolation
-		scale(zoom); // Scales (zooms in) according the player points, making the game harder
+		scale(zoom); // Scales (zooms in) according the player score, making the game harder
 		translate(-playerUnit.bodyPosition.x, -playerUnit.bodyPosition.y); // *
 		showBorders(); //Draws borders
 		showObstacles(); //Draws obstacles
@@ -99,7 +102,7 @@ function draw() {
 					// Check if the given shot hit the enemy
 					if (enemy.getHit(shot)) {
 						if (!enemy.shield) {
-							playerUnit.points += 1;
+							playerUnit.score += 1;
 							socket.emit('enemyHit', {
 								targetId: enemy.id
 							})
@@ -135,7 +138,7 @@ function draw() {
 				shot.show();
 			}
 		});
-		playerUnit.show(); // Draws the player unit
+		playerUnit.show(inGame); // Draws the player unit
 		if (inGame) {
 			socket.emit('update', {
 				positionX: playerUnit.bodyPosition.x,
@@ -143,6 +146,7 @@ function draw() {
 				velocityX: playerUnit.velocity.x,
 				velocityY: playerUnit.velocity.y,
 				shield: playerUnit.shield,
+				score: playerUnit.score,
 				shots: parseShots()
 			});
 		}
@@ -155,6 +159,13 @@ function mousePressed() {
 		playerUnit.shoot();
 	}
 }
+
+function keyPressed() {
+	if (keyCode == ENTER && !inGame) {
+		socket.emit('respawn');
+		inGame = true;
+	}
+  }
 
 function parseShots() {
 	let shots_to_send = [];
@@ -174,21 +185,46 @@ function parseShots() {
 
 function showObstacles() {
 	push();
-	noStroke();
-	fill(CANVAS_OBSTACLES_COLOR);
-	CANVAS_OBSTACLES.forEach(obstacle => {
-		quad(obstacle.x1, obstacle.y1, obstacle.x2, obstacle.y2, obstacle.x3, obstacle.y3, obstacle.x4, obstacle.y4);
-	});
-	ellipse(CANVAS_OBSTACLES_CENTER_PIECE.x, CANVAS_OBSTACLES_CENTER_PIECE.y, CANVAS_OBSTACLES_CENTER_PIECE.r1, CANVAS_OBSTACLES_CENTER_PIECE.r2);
+		noStroke();
+		fill(CANVAS_OBSTACLES_COLOR);
+		CANVAS_OBSTACLES.forEach(obstacle => {
+			quad(obstacle.x1, obstacle.y1, obstacle.x2, obstacle.y2, obstacle.x3, obstacle.y3, obstacle.x4, obstacle.y4);
+		});
+		ellipse(CANVAS_OBSTACLES_CENTER_PIECE.x, CANVAS_OBSTACLES_CENTER_PIECE.y, CANVAS_OBSTACLES_CENTER_PIECE.r1, CANVAS_OBSTACLES_CENTER_PIECE.r2);
 	pop();
+	showCenterPieceText();
+}
+
+function showCenterPieceText() {
+	push();
+        textAlign(CENTER);
+        textSize(CANVAS_OBSTACLES_CENTER_PIECE.r1 / 13);
+        textStyle(BOLD);
+		fill('rgb(69, 76, 89)');
+		text('LEADERBOARD', CANVAS_OBSTACLES_CENTER_PIECE.x, CANVAS_OBSTACLES_CENTER_PIECE.y - CANVAS_OBSTACLES_CENTER_PIECE.r1 / 8)
+		if(leaderboard) {
+			for (let index = 0; index < leaderboard.length; index++) {
+				textAlign(LEFT);
+				let username = (leaderboard[index].user.length > 8) ? (leaderboard[index].user.substring(0, 8) + "...") : leaderboard[index].user;
+				text(`${index + 1}. ${username}`, CANVAS_OBSTACLES_CENTER_PIECE.x - CANVAS_OBSTACLES_CENTER_PIECE.r1 / (3 + 0.1 * index), CANVAS_OBSTACLES_CENTER_PIECE.y + (30 * index));
+				textAlign(RIGHT);
+				text(`${leaderboard[index].score}`, CANVAS_OBSTACLES_CENTER_PIECE.x + CANVAS_OBSTACLES_CENTER_PIECE.r1 / (3 + 0.1 * index), CANVAS_OBSTACLES_CENTER_PIECE.y + (30 * index));
+			}
+		}
+    pop();
 }
 
 function showBorders() {
+	//FIXME: Could be done simpler
 	push();
-	noStroke();
-	fill(CANVAS_BORDER_COLOR);
-	CANVAS_BORDERS.forEach(border => {
-		quad(border.x1, border.y1, border.x2, border.y2, border.x3, border.y3, border.x4, border.y4);
-	})
+		noStroke();
+		fill(CANVAS_BORDER_COLOR);
+		CANVAS_BORDERS.forEach(border => {
+			quad(border.x1, border.y1, border.x2, border.y2, border.x3, border.y3, border.x4, border.y4);
+		})
 	pop();
+}
+
+function windowResized() {
+	resizeCanvas(windowWidth, windowHeight);
 }

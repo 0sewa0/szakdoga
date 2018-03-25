@@ -6,7 +6,7 @@ class Unit {
         this.id = id;
         this.shots = []; //All active shots of the unit
         this.shotIdCounter = 0;
-        this.points = 0; //The points collected during the game
+        this.score = 0; //The points collected during the game
 
         this.bodyPosition = createVector(startX, startY);
         this.bodyColor = color;
@@ -21,8 +21,8 @@ class Unit {
         this.trailColor = trailColor;
     }
 
-    show() {
-        this.drawBody();
+    show(inGame = true) {
+        this.drawBody(inGame);
         if (this.lastShot != 0) {
             this.lastShot--; // FIXME: This should be handled on the server side
         }
@@ -73,14 +73,29 @@ class Unit {
      */
     drawTrail() {
         push();
-        noStroke();
-        fill(this.trailColor);
-        for (let index = 1; index < 4; index++) {
-            ellipse(this.bodyPosition.x - this.velocity.x * index, this.bodyPosition.y - this.velocity.y * index, (UNIT_RADIUS * 2) - (index * 4.5), (UNIT_RADIUS * 2) - (index * 4.5));
-        }
+            noStroke();
+            fill(this.trailColor);
+            for (let index = 1; index < 4; index++) {
+                ellipse(this.bodyPosition.x - this.velocity.x * index, this.bodyPosition.y - this.velocity.y * index, (UNIT_RADIUS * 2) - (index * 4.5), (UNIT_RADIUS * 2) - (index * 4.5));
+            }
         pop();
     }
 
+    displayInfoText(inGame = true) {
+        push();
+            textAlign(CENTER);
+            textStyle(BOLD);
+            fill(CANVAS_TEXT_COLOR);
+            if(inGame) {
+                textSize((UNIT_RADIUS / this.user.length)*3);
+                text(`${this.user}\n${this.score}`, this.bodyPosition.x, this.bodyPosition.y);
+            }
+            else {
+                textSize(UNIT_RADIUS / 3);
+                text(`PRESS\nENTER`, this.bodyPosition.x, this.bodyPosition.y);
+            }
+        pop();
+    }
     /**
      * Turns the shield on
      * Drains the shield
@@ -176,12 +191,13 @@ class Unit {
      * Then we draw our special object with different options
      * Then we restore the options to what they were before (pop)
      */
-    drawBody() {
+    drawBody(inGame = true) {
         this.drawTrail();
         push();
-        (this.shield) ? stroke(UNIT_SHIELD_COLOR) | strokeWeight(UNIT_SHIELD_STROKE_WEIGHT): stroke(this.bodyColor) | strokeWeight(UNIT_STROKE_WEIGHT);
-        fill(this.bodyColor);
-        ellipse(this.bodyPosition.x, this.bodyPosition.y, UNIT_RADIUS * 2, UNIT_RADIUS * 2);
+            (this.shield) ? stroke(UNIT_SHIELD_COLOR) | strokeWeight(UNIT_SHIELD_STROKE_WEIGHT): stroke(this.bodyColor) | strokeWeight(UNIT_STROKE_WEIGHT);
+            (inGame) ? fill(this.bodyColor) : fill(UNIT_INACTIVE_COLOR);
+            ellipse(this.bodyPosition.x, this.bodyPosition.y, UNIT_RADIUS * 2, UNIT_RADIUS * 2);
         pop();
+        this.displayInfoText(inGame);
     }
 }

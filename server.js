@@ -14,12 +14,14 @@ let guestCounter = 0;
 
 let players = [];
 let shotPlayers = [];
+let leaderboard = [];
 
 class Player {
     constructor(id, user, spawn, positionX, positionY) {
         this.id = id;
         this.user = user;
         this.score = 0;
+        this.bestScore = 0;
 
         this.spawn = spawn
         this.positionX = positionX;
@@ -48,7 +50,8 @@ class Shot {
 
 let gameState = {
     players,
-    shots
+    shots,
+    leaderboard
 }
 
 setInterval(() => io.sockets.emit('heartbeat', gameState), 5);
@@ -56,7 +59,7 @@ setInterval(() => io.sockets.emit('heartbeat', gameState), 5);
 
 
 io.sockets.on('connection', socket => {
-    console.log('New Connection: ' + socket.id);
+    console.log(`New Connection: ${socket.id}`);
 
     socket.emit('spawn', {
         id: socket.id,
@@ -71,7 +74,7 @@ io.sockets.on('connection', socket => {
     });
 
     socket.on('update', data => {
-        let player = findPlayerById(socket.id);
+        let player = findActivePlayerById(socket.id);
 
         if (player) {
             player.positionX = data.positionX;
@@ -79,6 +82,11 @@ io.sockets.on('connection', socket => {
             player.velocityX = data.velocityX;
             player.velocityY = data.velocityY;
             player.shield = data.shield;
+            player.score = data.score;
+            if(player.score > player.bestScore) {
+                player.bestScore = player.score;
+                checkLeaderboard(player);
+            }
             if (data.shots.length > 0) {
                 data.shots.forEach(shot => {
                     let oldShot = shots.indexOf(shots.find(s => (s.id == shot.id && s.user == shot.user)));
@@ -95,19 +103,28 @@ io.sockets.on('connection', socket => {
     });
 
     socket.on('enemyHit', data => {
-        let shotPlayer = findPlayerById(data.targetId);
-        shotPlayers.push(shotPlayer);
-        removePlayer(shotPlayer);
-        io.to(data.targetId).emit('gotHit', {
-            shooterId: socket.id
-        });
-        io.sockets.emit('playerLeft', {
-            playerId: data.targetId
-        });
+        let shotPlayer = findActivePlayerById(data.targetId);
+            if(shotPlayer != undefined) {
+            shotPlayer.score = 0;
+            shotPlayers.push(shotPlayer);
+            removeActivePlayer(shotPlayer);
+            io.to(data.targetId).emit('gotHit', {
+                shooterId: socket.id
+            });
+            io.sockets.emit('playerLeft', {
+                playerId: data.targetId
+            });
+        }
+    });
+
+    socket.on('respawn', () => {
+        let respawn = findShotPlayerById(socket.id);
+        removeShotPlayer(respawn);
+        players.push(respawn);
     });
 
     socket.on('disconnect', () => {
-        console.log('Connection lost: ' + socket.id);
+        console.log(`Connection lost: ${socket.id}`);
         let leaver = findPlayerById(socket.id);
         if (leaver) {
             availableSpawn.push(leaver.spawn);
@@ -117,18 +134,53 @@ io.sockets.on('connection', socket => {
                 playerId: socket.id
             });
         }
+        console.log(gameState);
     });
 });
 
 function findPlayerById(playerId) {
-    let player = players.find(p => p.id == playerId);
+    let player = findActivePlayerById(playerId);
     if (player != undefined) {
         return player
     }
+    return findShotPlayerById(playerId);
+}
+
+function findShotPlayerById(playerId) {
     return shotPlayers.find(p => p.id == playerId);
 }
 
+function findActivePlayerById(playerId) {
+    return players.find(p => p.id == playerId);
+}
+
 function removePlayer(player) {
-    players.splice(players.findIndex(p => p == player), 1);
-    shotPlayers.splice(shotPlayers.findIndex(p => p == player), 1);
+    return (removeShotPlayer(player)) ? true : removeActivePlayer(player);
+}
+
+function removeShotPlayer(player) {
+    let index = shotPlayers.findIndex(p => p == player)
+    return (index != -1) ? shotPlayers.splice(index, 1) | true : false;
+}
+
+function removeActivePlayer(player) {
+    let index = players.findIndex(p => p == player)
+    return (index != -1) ? players.splice(index, 1) | true : false;
+}
+
+function checkLeaderboard(player) {
+
+    let champ = leaderboard.find( leader => leader.user == player.user)
+    if(champ) {
+        champ.score++;
+        leaderboard.sort((a,b) => a.score < b.score);
+    }
+    else if( leaderboard.length < 3 ) {
+        leaderboard.push({user: player.user, score: player.bestScore});
+        leaderboard.sort((a,b) => a.score < b.score);
+    }
+    else if(leaderboard.some( leader => leader.score < player.bestScore)) {
+        leaderboard[2] = {user: player.user, score: player.bestScore};
+        leaderboard.sort((a,b) => a.score < b.score);
+    }
 }

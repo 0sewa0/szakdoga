@@ -2,14 +2,15 @@
 
 //UNIT parameters
 const UNIT_RADIUS = 40;
-const UNIT_BASE_COLOR = 'rgb(255, 214, 138)';
-const UNIT_BASE_TRAIL_COLOR = 'rgb(102, 217, 237)';
+const UNIT_BASE_COLOR = 'rgb(255, 214, 138)';//#ffd68a
+const UNIT_BASE_TRAIL_COLOR = 'rgb(102, 217, 237)';//#66d9ed
+const UNIT_INACTIVE_COLOR = 'rgb(224, 108, 117)'; //#e06c75
 const UNIT_STROKE_WEIGHT = 1;
 const UNIT_FRICTION = 0.88;
 const UNIT_MOVEMENT_SPEED = 1;
 const UNIT_BOUNCE_OFF = 2;
 
-const UNIT_SHIELD_COLOR = 'rgb(97, 175, 239)';
+const UNIT_SHIELD_COLOR = 'rgb(97, 175, 239)';//#61afef
 const UNIT_SHIELD_CHARGE = 20;
 const UNIT_SHIELD_CHARGE_RATE = 0.1;
 const UNIT_SHIELD_CHARGE_LOSS = 1;
@@ -18,7 +19,7 @@ const UNIT_SHIELD_STROKE_WEIGHT = 10;
 //SHOT parameters
 const SHOT_RADIUS = 7;
 const SHOT_SPEED = 20;
-const SHOT_BASE_COLOR = 'rgb(181, 232, 144)';
+const SHOT_BASE_COLOR = 'rgb(181, 232, 144)';//#b5e890
 const SHOT_STROKE_WEIGHT = 1;
 const SHOT_COOLDOWN = 100; // The player can only shoot once in a period of time
 const SHOT_TTL = 20; // TIME TO LIVE
@@ -29,11 +30,13 @@ const CANVAS_MAP_X = 1000;
 const CANVAS_MAP_Y = 1000;
 const CANVAS_SIZE_X = window.innerWidth;
 const CANVAS_SIZE_Y = window.innerHeight;
-const CANVAS_COLOR = 'rgb(69, 76, 89)';
+const CANVAS_COLOR = 'rgb(69, 76, 89)';//#454c59
 const CANVAS_ZOOM_BASE = 64;
 const CANVAS_ZOOM_MULTIPLIER = 3;
 
-const CANVAS_BORDER_COLOR = 'rgb(224, 108, 117)';
+const CANVAS_TEXT_COLOR = 'rgb(69, 76, 89)'; //#454c59
+
+const CANVAS_BORDER_COLOR = 'rgb(224, 108, 117)'; //#e06c75
 const CANVAS_BORDERS = [
 
     //Top border
@@ -102,7 +105,7 @@ const CANVAS_BORDERS = [
 
 ]
 
-const CANVAS_OBSTACLES_COLOR = 'rgb(171, 178, 191)';
+const CANVAS_OBSTACLES_COLOR = 'rgb(171, 178, 191)'; //#abb2bf
 const CANVAS_OBSTACLES_MAP_RATIO_X = CANVAS_MAP_X / 10;
 const CANVAS_OBSTACLES_MAP_RATIO_Y = CANVAS_MAP_Y / 10;
 const CANVAS_OBSTACLES_CENTER_PIECE = {

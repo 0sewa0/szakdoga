@@ -16,6 +16,7 @@
   "homepage": "https://bitbucket.org/s_e_w_a/boop#readme",
   "dependencies": {
     "express": "^4.16.2",
-    "socket.io": "^2.0.4"
+    "socket.io": "^2.0.4",
+    "p5": "0.6.0"
   }
 }

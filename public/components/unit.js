@@ -1,3 +1,5 @@
+
+
 class Unit {
 
     constructor(startX, startY, user, id, spawn, color = UNIT_BASE_COLOR, trailColor = UNIT_BASE_TRAIL_COLOR) {

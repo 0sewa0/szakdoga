@@ -1,19 +1,16 @@
 let playerUnit;
 let inGame = false;
-
-let enemyUnits = [];
 let leaderboard = [];
 let border;
 let zoom = 1;
 let spawn = [];
 
-let socket;
+const socket = io.connect('http://localhost:3000')
+const enemyUnits = [];
 
 function setup() {
 	createCanvas(CANVAS_SIZE_X, CANVAS_SIZE_Y); // Creates the area that the player sees
 	spawn = CANVAS_SPAWN_POINTS();
-
-	socket = io.connect('http://localhost:3000')
 
 	socket.on('heartbeat',
 		data => {
@@ -71,8 +68,6 @@ function setup() {
 			playerUnit.bodyPosition.x = spawn[playerUnit.spawn].x;
 			playerUnit.bodyPosition.y = spawn[playerUnit.spawn].y;
 			playerUnit.score = 0;
-			//TODO: Add a respawn option
-			//TODO: Add score handling on the server and client side
 		});
 
 	socket.on('playerLeft',

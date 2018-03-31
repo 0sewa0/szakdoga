@@ -19,7 +19,7 @@ class Shot {
                 return true;
             }
         });
-        let distanceFromCenter = p5.Vector.dist(this.position, createVector(CANVAS_OBSTACLES_CENTER_PIECE.x, CANVAS_OBSTACLES_CENTER_PIECE.y));
+        const distanceFromCenter = p5.Vector.dist(this.position, createVector(CANVAS_OBSTACLES_CENTER_PIECE.x, CANVAS_OBSTACLES_CENTER_PIECE.y));
         // If the distance is smaller than the sum of the two objects radii(plural of radius) then the two object intesect
         if (distanceFromCenter < SHOT_RADIUS + CANVAS_OBSTACLES_CENTER_PIECE.r1 / 2) {
             this.ttl = 0;

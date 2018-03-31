@@ -1,20 +1,20 @@
-let express = require('express');
-let app = express();
-let server = app.listen(3000);
+const express = require('express');
+const app = express();
+const server = app.listen(3000);
 app.use(express.static('public'));
 
 console.log('Server On');
 
-let socket = require('socket.io');
-let io = socket(server);
+const socket = require('socket.io');
+const io = socket(server);
 
 
-let availableSpawn = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+const availableSpawn = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 let guestCounter = 0;
 
-let players = [];
-let shotPlayers = [];
-let leaderboard = [];
+const players = [];
+const shotPlayers = [];
+const leaderboard = [];
 
 class Player {
     constructor(id, user, spawn, positionX, positionY) {
@@ -34,7 +34,7 @@ class Player {
     }
 }
 
-let shots = [];
+const shots = [];
 
 class Shot {
     constructor(user, id, positionX, positionY, velocityX, velocityY, ttl) {
@@ -48,7 +48,7 @@ class Shot {
     }
 }
 
-let gameState = {
+const gameState = {
     players,
     shots,
     leaderboard
@@ -74,7 +74,7 @@ io.sockets.on('connection', socket => {
     });
 
     socket.on('update', data => {
-        let player = findActivePlayerById(socket.id);
+        const player = findActivePlayerById(socket.id);
 
         if (player) {
             player.positionX = data.positionX;
@@ -89,7 +89,7 @@ io.sockets.on('connection', socket => {
             }
             if (data.shots.length > 0) {
                 data.shots.forEach(shot => {
-                    let oldShot = shots.indexOf(shots.find(s => (s.id == shot.id && s.user == shot.user)));
+                    const oldShot = shots.indexOf(shots.find(s => (s.id == shot.id && s.user == shot.user)));
                     if (shot.ttl <= 0) {
                         shots.splice(oldShot, 1);
                     } else if (oldShot >= 0) {
@@ -103,8 +103,8 @@ io.sockets.on('connection', socket => {
     });
 
     socket.on('enemyHit', data => {
-        let shotPlayer = findActivePlayerById(data.targetId);
-            if(shotPlayer != undefined) {
+        const shotPlayer = findActivePlayerById(data.targetId);
+        if(shotPlayer != undefined) {
             shotPlayer.score = 0;
             shotPlayers.push(shotPlayer);
             removeActivePlayer(shotPlayer);
@@ -118,14 +118,14 @@ io.sockets.on('connection', socket => {
     });
 
     socket.on('respawn', () => {
-        let respawn = findShotPlayerById(socket.id);
+        const respawn = findShotPlayerById(socket.id);
         removeShotPlayer(respawn);
         players.push(respawn);
     });
 
     socket.on('disconnect', () => {
         console.log(`Connection lost: ${socket.id}`);
-        let leaver = findPlayerById(socket.id);
+        const leaver = findPlayerById(socket.id);
         if (leaver) {
             availableSpawn.push(leaver.spawn);
             shots.filter(s => s.user == leaver.user).forEach(shot => shots.splice(shots.findIndex(s => s == shot), 1));
@@ -134,12 +134,11 @@ io.sockets.on('connection', socket => {
                 playerId: socket.id
             });
         }
-        console.log(gameState);
     });
 });
 
 function findPlayerById(playerId) {
-    let player = findActivePlayerById(playerId);
+    const player = findActivePlayerById(playerId);
     if (player != undefined) {
         return player
     }
@@ -159,18 +158,18 @@ function removePlayer(player) {
 }
 
 function removeShotPlayer(player) {
-    let index = shotPlayers.findIndex(p => p == player)
+    const index = shotPlayers.findIndex(p => p == player)
     return (index != -1) ? shotPlayers.splice(index, 1) | true : false;
 }
 
 function removeActivePlayer(player) {
-    let index = players.findIndex(p => p == player)
+    const index = players.findIndex(p => p == player)
     return (index != -1) ? players.splice(index, 1) | true : false;
 }
 
 function checkLeaderboard(player) {
 
-    let champ = leaderboard.find( leader => leader.user == player.user)
+    const champ = leaderboard.find( leader => leader.user == player.user)
     if(champ) {
         champ.score++;
         leaderboard.sort((a,b) => a.score < b.score);

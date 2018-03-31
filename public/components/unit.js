@@ -139,10 +139,10 @@ class Unit {
                 (this.bodyPosition.x < obstacle.x1) ? this.bodyPosition.x = lerp(this.bodyPosition.x, obstacle.x1 - UNIT_RADIUS, 0.2): (this.bodyPosition.x > obstacle.x4) ? this.bodyPosition.x = lerp(this.bodyPosition.x, obstacle.x4 + UNIT_RADIUS, 0.2) : (this.bodyPosition.y > obstacle.y1) ? this.bodyPosition.y = lerp(this.bodyPosition.y, obstacle.y1 + UNIT_RADIUS, 0.2) : (this.bodyPosition.y < obstacle.y2) ? this.bodyPosition.y = lerp(this.bodyPosition.y, obstacle.y2 - UNIT_RADIUS, 0.2) : false;
             }
         });
-        let distance_from_center = p5.Vector.dist(this.bodyPosition, createVector(CANVAS_OBSTACLES_CENTER_PIECE.x, CANVAS_OBSTACLES_CENTER_PIECE.y));
+        const distance_from_center = p5.Vector.dist(this.bodyPosition, createVector(CANVAS_OBSTACLES_CENTER_PIECE.x, CANVAS_OBSTACLES_CENTER_PIECE.y));
         if (distance_from_center < UNIT_RADIUS + CANVAS_OBSTACLES_CENTER_PIECE.r1 / 2) {
-            let angle = this.bodyPosition.heading();
-            let push = p5.Vector.fromAngle(angle).mult(3 * CANVAS_OBSTACLES_CENTER_PIECE.r1 / 5);
+            const angle = this.bodyPosition.heading();
+            const push = p5.Vector.fromAngle(angle).mult(3 * CANVAS_OBSTACLES_CENTER_PIECE.r1 / 5);
             this.bodyPosition = this.bodyPosition.lerp(push, 0.2);
         }
     }
@@ -153,7 +153,7 @@ class Unit {
      */
     shoot() {
         if (this.lastShot == 0) {
-            let new_shot = new Shot(this.bodyPosition, this.user, this.shotIdCounter++);
+            const new_shot = new Shot(this.bodyPosition, this.user, this.shotIdCounter++);
             this.shots.push(new_shot);
             this.lastShot = SHOT_COOLDOWN;
             return new_shot;
@@ -165,7 +165,7 @@ class Unit {
      * If the distance is smaller than the sum of the two objects radii(plural of radius) then the two object intesect
      */
     getHit(shot) {
-        let distance = p5.Vector.dist(this.bodyPosition, shot.position);
+        const distance = p5.Vector.dist(this.bodyPosition, shot.position);
         if (distance < UNIT_RADIUS + SHOT_RADIUS) {
             return true;
         } else {
@@ -178,7 +178,7 @@ class Unit {
      * Then if the distance is smaller than the sum of the two objects radii(plural of radius) then the two object intesect
      */
     touching(other) {
-        let distance = p5.Vector.dist(this.bodyPosition, other.bodyPosition);
+        const distance = p5.Vector.dist(this.bodyPosition, other.bodyPosition);
         if (distance < UNIT_RADIUS * 2) {
             return true;
         } else {

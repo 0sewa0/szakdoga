@@ -11,11 +11,10 @@ const enemyUnits = [];
 function setup() {
 	createCanvas(CANVAS_SIZE_X, CANVAS_SIZE_Y); // Creates the area that the player sees
 	spawn = CANVAS_SPAWN_POINTS();
-
 	socket.on('heartbeat',
 		data => {
 			data.players.forEach(player => {
-				if (player.id != playerUnit.id) {
+				if (playerUnit && player.id != playerUnit.id) {
 					let enemy = enemyUnits.find(e => e.id == player.id);
 					if (enemy) {
 						enemy.bodyPosition.x = player.positionX;

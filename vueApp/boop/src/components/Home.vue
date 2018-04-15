@@ -1,16 +1,35 @@
 <template>
-  <v-container fluid>
-    <v-layout row wrap>
-      <v-flex xs12 class="text-xs-center" mt-5>
-        <h1>Home page</h1>
-      </v-flex>
-      <v-flex xs12 class="text-xs-center" mt-3>
-        <p>This is a user's home page</p>
-      </v-flex>
-    </v-layout>
-  </v-container>
+  <v-card style="max-width: 400px; margin: auto;">
+      <v-container fluid >
+        <v-layout row wrap>
+          <v-flex xs12 class="text-xs-center">
+                <form @submit.prevent="startGame">
+                    <v-text-field
+                        id = "dname"
+                        name="displayName"
+                        label="Display Name"
+                        v-model="displayName"
+                        required>
+                    </v-text-field>
+                    <v-btn color="primary" type="submit"> Start a game </v-btn>
+                </form>
+          </v-flex>
+        </v-layout>
+    </v-container>
+  </v-card>
 </template>
 
 <script>
-export default {}
+export default {
+    data(){
+        return {
+            displayName: this.$store.getters.getUserName.email.split('@')[0]
+        }
+    },
+    methods:{
+        startGame() {
+            this.$store.dispatch('startGame',{displayName: this.displayName})
+        }
+    }
+}
 </script>

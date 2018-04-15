@@ -10,7 +10,8 @@ export const store = new Vuex.Store({
     appTitle: 'Boop.io',
     user: null,
     error: null,
-    loading: false
+    loading: false,
+    displayName: null
   },
   mutations: {
     setUser (state, payload) {
@@ -21,6 +22,9 @@ export const store = new Vuex.Store({
     },
     setLoading (state, payload) {
       state.loading = payload
+    },
+    setDisplayName(state, payload) {
+      state.displayName = payload
     }
   },
   actions: {
@@ -59,12 +63,25 @@ export const store = new Vuex.Store({
       firebase.auth().signOut()
       commit('setUser', null)
       router.push('/')
+    },
+    startGame({commit}, payload) {
+      commit('setDisplayName', payload.displayName)
+      router.push('/game')
+    },
+    goHome({commit}) {
+      router.push('/home')
     }
 
   },
   getters: {
     isAuthenticated (state) {
       return state.user !== null && state.user !== undefined
+    },
+    getUserName(state) {
+      return state.user
+    },
+    getDisplayName(state) {
+      return state.displayName
     }
   }
 })

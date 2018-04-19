@@ -8,6 +8,7 @@
 import * as params from './gModules/params'
 import Unit from './gModules/unit'
 import Shot from './gModules/shot'
+import io from 'socket.io-client'
 
 export default {
     data() {
@@ -32,16 +33,15 @@ export default {
                 let zoom = 1;
                 let spawn = [];
 
-                //const socket = io.connect('http://localhost:3000')
+                const socket = io.connect('http://localhost:3000')
                 const enemyUnits = [];
                 p5.setup = _ => {
                     console.log(params)
                     this.canvas = p5.createCanvas(params.CANVAS_SIZE_X, params.CANVAS_SIZE_Y); // Creates the area that the player sees
                     this.canvas.parent(this.$refs.canvas)
                     spawn = params.CANVAS_SPAWN_POINTS();
-                    playerUnit = new Unit(spawn[0].x, spawn[0].y, this.$store.getters.getDisplayName, 0, 0);
                     inGame = true;
-                    /*socket.on('heartbeat',
+                    socket.on('heartbeat',
                         data => {
                             data.players.forEach(player => {
                                 if (playerUnit && player.id != playerUnit.id) {
@@ -80,7 +80,7 @@ export default {
 
                     socket.on('spawn',
                         data => {
-                            playerUnit = new Unit(spawn[data.spawnPoint].x, spawn[data.spawnPoint].y, 'Guest' + data.guestNumber, data.id, data.spawnPoint); // Creates the player unit
+                            playerUnit = new Unit(spawn[data.spawnPoint].x, spawn[data.spawnPoint].y, this.$store.getters.getDisplayName, data.id, data.spawnPoint); // Creates the player unit
                             socket.emit('start', {
                                 id: playerUnit.id,
                                 user: playerUnit.user,
@@ -104,7 +104,7 @@ export default {
                             if (data.playerId != playerUnit.id) {
                                 enemyUnits.splice(enemyUnits.findIndex(l => l == enemyUnits.find(e => e.id == data.playerId)), 1);
                             }
-                        });*/
+                        });
                 }
 
                 p5.draw = _ => {
@@ -163,7 +163,7 @@ export default {
                             }
                         });
                         playerUnit.show(inGame); // Draws the player unit
-                        /*if (inGame) {
+                        if (inGame) {
                             socket.emit('update', {
                                 positionX: playerUnit.bodyPosition.x,
                                 positionY: playerUnit.bodyPosition.y,
@@ -173,7 +173,7 @@ export default {
                                 score: playerUnit.score,
                                 shots: p5.parseShots()
                             });
-                        }*/
+                        }
                     }
                 }
 
@@ -186,7 +186,7 @@ export default {
 
                 p5.keyPressed = _ => {
                     if (p5.keyCode == p5.ENTER && !inGame) {
-                        //socket.emit('respawn');
+                        socket.emit('respawn');
                         inGame = true;
                     }
                 }

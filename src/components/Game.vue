@@ -228,11 +228,11 @@ export default {
                         p5.text('LEADERBOARD', params.CANVAS_OBSTACLES_CENTER_PIECE.x, params.CANVAS_OBSTACLES_CENTER_PIECE.y - params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / 8)
                         if(leaderboard) {
                             for (let index = 0; index < leaderboard.length; index++) {
-                                textAlign(p5.LEFT);
+                                p5.textAlign(p5.LEFT);
                                 let username = (leaderboard[index].user.length > 8) ? (leaderboard[index].user.substring(0, 8) + "...") : leaderboard[index].user;
-                                text(`${index + 1}. ${username}`, params.CANVAS_OBSTACLES_CENTER_PIECE.x - params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / (3 + 0.1 * index),         params.CANVAS_OBSTACLES_CENTER_PIECE.y + (30 * index));
-                                textAlign(RIGHT);
-                                text(`${leaderboard[index].score}`, params.CANVAS_OBSTACLES_CENTER_PIECE.x + params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / (3 + 0.1 * index),       params.CANVAS_OBSTACLES_CENTER_PIECE.y + (30 * index));
+                                p5.text(`${index + 1}. ${username}`, params.CANVAS_OBSTACLES_CENTER_PIECE.x - params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / (3 + 0.1 * index),         params.CANVAS_OBSTACLES_CENTER_PIECE.y + (30 * index));
+                                p5.textAlign(p5.RIGHT);
+                                p5.text(`${leaderboard[index].score}`, params.CANVAS_OBSTACLES_CENTER_PIECE.x + params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / (3 + 0.1 * index),       params.CANVAS_OBSTACLES_CENTER_PIECE.y + (30 * index));
                             }
                         }
                     p5.pop();

@@ -36,6 +36,6 @@ const unsubscribe = firebase.auth()
         store.dispatch('autoSignIn', firebaseUser)
       }
     }
-  })
+  });
   unsubscribe()
 })

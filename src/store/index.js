@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import router from '@/router'
 import firebase from 'firebase'
 
+
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
@@ -15,20 +16,29 @@ export const store = new Vuex.Store({
 
     //Game state
     displayName: null,
+    socket: null
   },
   mutations: {
     setUser (state, payload) {
-        state.user = payload
+        state.user = payload;
       },
     setError (state, payload) {
-      state.error = payload
+      state.error = payload;
     },
     setLoading (state, payload) {
-      state.loading = payload
+      state.loading = payload;
     },
     setDisplayName(state, payload) {
-      state.displayName = payload
-    }
+      state.displayName = payload;
+    },
+    setSocket(state, payload) {
+      if(state.socket) {
+        state.socket.close();
+        state.socket = payload
+      } else {
+        state.socket = payload
+      }
+    },
   },
   actions: {
     userSignUp ({commit}, payload) {
@@ -72,10 +82,9 @@ export const store = new Vuex.Store({
         router.push('/game')
     },
     goHome({commit}, payload) {
-      console.log(payload);
       commit('setDisplayName', null)
       router.push('/home')
-    }
+    },
 
   },
   getters: {

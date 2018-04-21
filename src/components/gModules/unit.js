@@ -25,8 +25,8 @@ export default class Unit {
         this.trailColor = trailColor;
     }
 
-    show(inGame = true) {
-        this.drawBody(inGame);
+    show(image, inGame = true) {
+        this.drawBody(image, inGame);
         if (this.lastShot != 0) {
             this.lastShot--; // FIXME: This should be handled on the server side
         }
@@ -204,13 +204,14 @@ export default class Unit {
      * Then we draw our special object with different options
      * Then we restore the options to what they were before (pop)
      */
-    drawBody(inGame = true) {
+    drawBody(image, inGame = true) {
         this.drawTrail();
         p5.push();
             (this.shield) ? p5.stroke(params.UNIT_SHIELD_COLOR) | p5.strokeWeight(params.UNIT_SHIELD_STROKE_WEIGHT) : p5.stroke(this.bodyColor) | p5.strokeWeight(params.UNIT_STROKE_WEIGHT);
             (inGame) ? p5.fill(this.bodyColor) : p5.fill(params.UNIT_INACTIVE_COLOR);
-            p5.ellipse(this.bodyPosition.x, this.bodyPosition.y, params.UNIT_RADIUS * 2, params.UNIT_RADIUS * 2);
+            p5.image(image, this.bodyPosition.x - params.UNIT_RADIUS, this.bodyPosition.y - params.UNIT_RADIUS, params.UNIT_RADIUS * 2, params.UNIT_RADIUS * 2)
+            //p5.ellipse(this.bodyPosition.x, this.bodyPosition.y, params.UNIT_RADIUS * 2, params.UNIT_RADIUS * 2);
         p5.pop();
-        this.displayInfoText(inGame);
+        //this.displayInfoText(inGame);
     }
 }

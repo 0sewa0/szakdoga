@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app dark fluid>
     <v-navigation-drawer v-model="sidebar" app>
       <v-list>
         <v-list-tile
@@ -47,7 +47,16 @@
       </v-toolbar-items>
     </v-toolbar>
     <v-content>
-      <router-view></router-view>
+      <v-layout center>
+        <v-dialog v-model="loading" content-class="loading-dialog" max-width="100">
+          <v-container fill-height>
+            <v-layout justify-center align-center>
+              <v-progress-circular indeterminate :size="70" :width="7" color="purple"></v-progress-circular>
+            </v-layout>
+          </v-container>
+        </v-dialog>
+      </v-layout>
+      <router-view v-show="!loading"></router-view>
     </v-content>
   </v-app>
 </template>
@@ -77,6 +86,9 @@
             { title: 'Sign In', path: '/signin', icon: 'lock_open' }
           ]
         }
+      },
+      loading() {
+        return this.$store.state.loading;
       }
     },
     methods: {

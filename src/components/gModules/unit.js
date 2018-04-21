@@ -3,8 +3,9 @@ import Shot from './shot'
 
 export default class Unit {
 
-    constructor(startX, startY, user, id, spawn, color = params.UNIT_BASE_COLOR, trailColor = params.UNIT_BASE_TRAIL_COLOR) {
+    constructor(startX, startY, user, id, name, spawn, color = params.UNIT_BASE_COLOR, trailColor = params.UNIT_BASE_TRAIL_COLOR) {
         this.user = user; // The id of the user controlling this unit
+        this.name = name;
         this.spawn = spawn;
         this.id = id;
         this.shots = []; //All active shots of the unit
@@ -90,8 +91,11 @@ export default class Unit {
             p5.textStyle(p5.BOLD);
             p5.fill(params.CANVAS_TEXT_COLOR);
             if(inGame) {
-                p5.textSize((params.UNIT_RADIUS / this.user.length)*3);
-                p5.text(`${this.user}\n${this.score}`, this.bodyPosition.x, this.bodyPosition.y);
+                const div = (this.name.length > 4) ? this.name.length : 4;
+                p5.textSize(( params.UNIT_RADIUS / div )*3);
+                p5.text(`${this.name}`, this.bodyPosition.x, this.bodyPosition.y);
+                p5.textSize(( params.UNIT_RADIUS / 4 )*3);
+                p5.text(`${this.score}`, this.bodyPosition.x, this.bodyPosition.y + 35);
             }
             else {
                 p5.textSize(params.UNIT_RADIUS / 3);

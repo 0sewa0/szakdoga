@@ -7,11 +7,14 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
+    //App state
     appTitle: 'Boop.io',
     user: null,
     error: null,
     loading: false,
-    displayName: null
+
+    //Game state
+    displayName: null,
   },
   mutations: {
     setUser (state, payload) {
@@ -65,23 +68,21 @@ export const store = new Vuex.Store({
       router.push('/')
     },
     startGame({commit}, payload) {
-      commit('setDisplayName', payload.displayName)
-      router.push('/game')
+        commit('setDisplayName', payload.displayName)
+        router.push('/game')
     },
-    goHome({commit}) {
+    goHome({commit}, payload) {
+      console.log(payload);
+      commit('setDisplayName', null)
       router.push('/home')
     }
 
   },
   getters: {
-    isAuthenticated (state) {
-      return state.user !== null && state.user !== undefined
-    },
-    getUserName(state) {
-      return state.user
-    },
-    getDisplayName(state) {
-      return state.displayName
-    }
+    //App
+    isAuthenticated: (state) => state.user !== null && state.user !== undefined,
+    getUserName: (state) => state.user,
+    //Game
+    getDisplayName: (state) => state.displayName,
   }
 })

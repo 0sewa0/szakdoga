@@ -1,74 +1,55 @@
+//Imports
 const express = require('express');
+const socket = require('socket.io');
+const Player = require('./model/player')
+const Shot = require('./model/shot')
+
+//Server init
 const app = express();
 const server = app.listen(3000);
-app.use(express.static('public/game/game.html'));
-
 console.log('Server On');
-
-const socket = require('socket.io');
 const io = socket(server);
+let connectionCounter = 0;
 
-
+//Game state init
 const availableSpawn = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 let guestCounter = 0;
-
 const players = [];
 const shotPlayers = [];
 const leaderboard = [];
-
-class Player {
-    constructor(id, user, spawn, positionX, positionY) {
-        this.id = id;
-        this.user = user;
-        this.score = 0;
-        this.bestScore = 0;
-
-        this.spawn = spawn
-        this.positionX = positionX;
-        this.positionY = positionY;
-
-        this.velocityX = 0;
-        this.velocityY = 0;
-
-        this.shield = false;
-    }
-}
-
 const shots = [];
-
-class Shot {
-    constructor(user, id, positionX, positionY, velocityX, velocityY, ttl) {
-        this.user = user;
-        this.id = id;
-        this.positionX = positionX;
-        this.positionY = positionY;
-        this.velocityX = velocityX;
-        this.velocityY = velocityY;
-        this.ttl = ttl;
-    }
-}
-
 const gameState = {
     players,
     shots,
     leaderboard
 }
 
+
+//Game server logic
 setInterval(() => io.sockets.emit('heartbeat', gameState), 5);
-
-
 
 io.sockets.on('connection', socket => {
     console.log(`New Connection: ${socket.id}`);
-
-    socket.emit('spawn', {
-        id: socket.id,
-        spawnPoint: availableSpawn[Math.floor(Math.random() * availableSpawn.length)],
-        guestNumber: guestCounter
+    if(connectionCounter >= 12) {
+        socket.emit('goHome', "Server full");
+        socket.disconnect();
+    }
+    socket.on('userCheck', data => {
+        if(!findUser(data)) {
+            connectionCounter++
+            socket.emit('spawn', {
+                id: socket.id,
+                spawnPoint: availableSpawn[Math.floor(Math.random() * availableSpawn.length)],
+                guestNumber: guestCounter
+            });
+        } else {
+            socket.emit('goHome', "Already in game!");
+            socket.disconnect();
+        }
     });
 
     socket.on('start', data => {
-        players.push(new Player(data.id, data.user, data.spawn, data.positionX, data.positionY));
+        players.push(new Player(data.id, data.user, data.name, data.spawn, data.positionX, data.positionY));
         availableSpawn.splice(availableSpawn.indexOf(data.spawn), 1);
         guestCounter++;
     });
@@ -125,6 +106,7 @@ io.sockets.on('connection', socket => {
 
     socket.on('disconnect', () => {
         console.log(`Connection lost: ${socket.id}`);
+        connectionCounter--
         const leaver = findPlayerById(socket.id);
         if (leaver) {
             availableSpawn.push(leaver.spawn);
@@ -137,7 +119,9 @@ io.sockets.on('connection', socket => {
     });
 });
 
-function findPlayerById(playerId) {
+//Util functions
+
+findPlayerById = (playerId) => {
     const player = findActivePlayerById(playerId);
     if (player != undefined) {
         return player
@@ -145,29 +129,29 @@ function findPlayerById(playerId) {
     return findShotPlayerById(playerId);
 }
 
-function findShotPlayerById(playerId) {
+findShotPlayerById = (playerId) => {
     return shotPlayers.find(p => p.id == playerId);
 }
 
-function findActivePlayerById(playerId) {
+findActivePlayerById = (playerId) => {
     return players.find(p => p.id == playerId);
 }
 
-function removePlayer(player) {
+removePlayer = (player) => {
     return (removeShotPlayer(player)) ? true : removeActivePlayer(player);
 }
 
-function removeShotPlayer(player) {
+removeShotPlayer = (player) => {
     const index = shotPlayers.findIndex(p => p == player)
     return (index != -1) ? shotPlayers.splice(index, 1) | true : false;
 }
 
-function removeActivePlayer(player) {
+removeActivePlayer = (player) => {
     const index = players.findIndex(p => p == player)
     return (index != -1) ? players.splice(index, 1) | true : false;
 }
 
-function checkLeaderboard(player) {
+checkLeaderboard = (player) => {
 
     const champ = leaderboard.find( leader => leader.user == player.user)
     if(champ) {
@@ -175,11 +159,16 @@ function checkLeaderboard(player) {
         leaderboard.sort((a,b) => a.score < b.score);
     }
     else if( leaderboard.length < 3 ) {
-        leaderboard.push({user: player.user, score: player.bestScore});
+        leaderboard.push({user: player.name, score: player.bestScore});
         leaderboard.sort((a,b) => a.score < b.score);
     }
     else if(leaderboard.some( leader => leader.score < player.bestScore)) {
-        leaderboard[2] = {user: player.user, score: player.bestScore};
+        leaderboard[2] = {user: player.name, score: player.bestScore};
         leaderboard.sort((a,b) => a.score < b.score);
     }
+}
+
+findUser = (user) => {
+    const index = players.findIndex( p => p.user == user);
+    return (index != -1) ? true : false;
 }

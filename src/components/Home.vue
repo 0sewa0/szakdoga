@@ -1,4 +1,5 @@
 <template>
+<v-container fluid>
   <v-card style="max-width: 400px; margin: auto;">
       <v-container fluid >
         <v-layout row wrap>
@@ -17,17 +18,19 @@
         </v-layout>
     </v-container>
   </v-card>
+</v-container>
 </template>
 
 <script>
 export default {
     data(){
         return {
-            displayName: this.$store.getters.getUserName.email.split('@')[0]
+            displayName: this.$store.getters.getUserName.email.split('@')[0],
         }
     },
-    methods:{
+    methods: {
         startGame() {
+            this.$store.commit('setLoading', true);
             this.$store.dispatch('startGame',{displayName: this.displayName})
         }
     }

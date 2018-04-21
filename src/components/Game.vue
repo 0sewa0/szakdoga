@@ -20,9 +20,9 @@ export default {
     },
     mounted () {
         if(!this.$store.getters.getDisplayName) {
-            this.$store.dispatch('goHome')
+            this.$store.dispatch('goHome', 'This is not the way')
         }
-        else{
+        else {
             this.script = p5 => {
                 window.p5 = p5;
 
@@ -32,15 +32,28 @@ export default {
                 let border;
                 let zoom = 1;
                 let spawn = [];
-
-                const socket = io.connect('http://localhost:3000')
                 const enemyUnits = [];
+
+                const socket = io.connect('http://localhost:3000');
+                socket.on('connect_error', error => {
+                    socket.close();
+                    this.$destroy;
+                    this.$store.dispatch('goHome', "Couldn't reach the server!");
+                    this.$store.commit('setLoading', false);
+                });
+                socket.on('goHome', data => {
+                    socket.close();
+                    this.$destroy;
+                    this.$store.dispatch('goHome', data);
+                    this.$store.commit('setLoading', false);
+                });
+
+                socket.emit('userCheck', this.$store.getters.getUserName.email);
+
                 p5.setup = _ => {
-                    console.log(params)
                     this.canvas = p5.createCanvas(params.CANVAS_SIZE_X, params.CANVAS_SIZE_Y); // Creates the area that the player sees
-                    this.canvas.parent(this.$refs.canvas)
+                    this.canvas.parent(this.$refs.canvas);
                     spawn = params.CANVAS_SPAWN_POINTS();
-                    inGame = true;
                     socket.on('heartbeat',
                         data => {
                             data.players.forEach(player => {
@@ -54,24 +67,26 @@ export default {
                                         enemy.score = player.score;
                                         enemy.shield = player.shield;
                                     } else {
-                                        enemyUnits.push(new Unit(player.positionX, player.positionY, player.user, player.id, player.spawn));
+                                        enemyUnits.push(new Unit(player.positionX, player.positionY, player.user, player.id, player.name, player.spawn));
                                     }
                                 }
                             });
                             data.shots.forEach(shot => {
-                                if (shot.user != playerUnit.user) {
+                                if (playerUnit && shot.user != playerUnit.user) {
                                     let owner = enemyUnits.find(e => e.user == shot.user);
-                                    let enemyShot = owner.shots.find(s => s.id == shot.id);
-                                    if (enemyShot) {
-                                        enemyShot.position.x = shot.positionX;
-                                        enemyShot.position.y = shot.positionY;
-                                        enemyShot.velocity.x = shot.velocityX;
-                                        enemyShot.velocity.y = shot.velocityY;
-                                        enemyShot.ttl = shot.ttl;
-                                    } else {
-                                        let newShot = new Shot(createVector(shot.positionX, shot.positionY), shot.user, shot.id);
-                                        newShot.velocity = createVector(shot.velocityX, shot.velocityY);
-                                        owner.shots.push(newShot);
+                                    if(owner) {
+                                        let enemyShot = owner.shots.find(s => s.id == shot.id);
+                                        if (enemyShot) {
+                                            enemyShot.position.x = shot.positionX;
+                                            enemyShot.position.y = shot.positionY;
+                                            enemyShot.velocity.x = shot.velocityX;
+                                            enemyShot.velocity.y = shot.velocityY;
+                                            enemyShot.ttl = shot.ttl;
+                                        } else {
+                                            let newShot = new Shot(p5.createVector(shot.positionX, shot.positionY), shot.user, shot.id);
+                                            newShot.velocity = p5.createVector(shot.velocityX, shot.velocityY);
+                                            owner.shots.push(newShot);
+                                        }
                                     }
                                 }
                             });
@@ -80,15 +95,18 @@ export default {
 
                     socket.on('spawn',
                         data => {
-                            playerUnit = new Unit(spawn[data.spawnPoint].x, spawn[data.spawnPoint].y, this.$store.getters.getDisplayName, data.id, data.spawnPoint); // Creates the player unit
+                            inGame = true;
+                            playerUnit = new Unit(spawn[data.spawnPoint].x, spawn[data.spawnPoint].y, this.$store.getters.getUserName.email, data.id, this.$store.getters.getDisplayName,data.spawnPoint); // Creates the player unit
                             socket.emit('start', {
                                 id: playerUnit.id,
                                 user: playerUnit.user,
+                                name: playerUnit.name,
                                 positionX: playerUnit.bodyPosition.x,
                                 positionY: playerUnit.bodyPosition.y,
                                 spawn: data.spawnPoint
                             });
                             inGame = true;
+                            this.$store.dispatch('setLoading', false);
                         });
 
                     socket.on('gotHit',
@@ -127,9 +145,9 @@ export default {
                                     if (enemy.getHit(shot)) {
                                         if (!enemy.shield) {
                                             playerUnit.score += 1;
-                                            /*socket.emit('enemyHit', {
+                                            socket.emit('enemyHit', {
                                                 targetId: enemy.id
-                                            })*/
+                                            });
                                         }
                                         shot.ttl = 1 //Removes the shot from the array (consequently removeing it from the game)
                                     }

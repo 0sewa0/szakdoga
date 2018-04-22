@@ -41,6 +41,7 @@ export const CANVAS_BORDERS = [
 
     //Top border
     {
+        horizontal: true,
         x1: -CANVAS_MAP_X - UNIT_RADIUS,
         y1: -CANVAS_MAP_Y - UNIT_RADIUS,
 
@@ -57,6 +58,7 @@ export const CANVAS_BORDERS = [
     },
     //Left border
     {
+        horizontal: false,
         x1: -CANVAS_MAP_X - CANVAS_SIZE_X / 2 - UNIT_RADIUS,
         y1: CANVAS_MAP_Y + CANVAS_SIZE_Y / 2 + UNIT_RADIUS,
 
@@ -73,6 +75,7 @@ export const CANVAS_BORDERS = [
     },
     //Right border
     {
+        horizontal: false,
         x1: CANVAS_MAP_X + UNIT_RADIUS,
         y1: CANVAS_MAP_Y + CANVAS_SIZE_Y / 2 + UNIT_RADIUS,
 
@@ -88,8 +91,9 @@ export const CANVAS_BORDERS = [
     },
     //Bottom border
     {
+        horizontal: true,
         x1: -CANVAS_MAP_X - UNIT_RADIUS,
-        y1: CANVAS_MAP_Y + UNIT_RADIUS,
+        y1: CANVAS_MAP_Y + CANVAS_SIZE_Y / 2 + UNIT_RADIUS,
 
         x2: CANVAS_MAP_X + UNIT_RADIUS,
         y2: CANVAS_MAP_Y + UNIT_RADIUS,
@@ -98,7 +102,8 @@ export const CANVAS_BORDERS = [
         y3: CANVAS_MAP_Y + CANVAS_SIZE_Y / 2 + UNIT_RADIUS,
 
         x4: -CANVAS_MAP_X - UNIT_RADIUS,
-        y4: CANVAS_MAP_Y + CANVAS_SIZE_Y / 2 + UNIT_RADIUS
+        y4: CANVAS_MAP_Y + UNIT_RADIUS,
+
 
     }
 
@@ -117,6 +122,7 @@ export const CANVAS_OBSTACLES_CENTER_PIECE = {
 export const CANVAS_OBSTACLES = [
     //down_left_horizontal:
     {
+        horizontal: true,
         x1: -CANVAS_MAP_X + CANVAS_OBSTACLES_MAP_RATIO_X, // down left corner
         y1: CANVAS_MAP_Y - CANVAS_OBSTACLES_MAP_RATIO_Y,
 
@@ -131,6 +137,7 @@ export const CANVAS_OBSTACLES = [
     },
     //down_left_vertical:
     {
+        horizontal: false,
         x1: -CANVAS_MAP_X + CANVAS_OBSTACLES_MAP_RATIO_X * 5, // down left corner
         y1: CANVAS_MAP_Y - CANVAS_OBSTACLES_MAP_RATIO_Y,
 
@@ -145,6 +152,7 @@ export const CANVAS_OBSTACLES = [
     },
     //down_right_horizontal:
     {
+        horizontal: true,
         x1: CANVAS_MAP_X - CANVAS_OBSTACLES_MAP_RATIO_X * 9, // down left corner
         y1: CANVAS_MAP_Y - CANVAS_OBSTACLES_MAP_RATIO_Y,
 
@@ -159,6 +167,7 @@ export const CANVAS_OBSTACLES = [
     },
     //down_right_vertical:
     {
+        horizontal: false,
         x1: CANVAS_MAP_X - CANVAS_OBSTACLES_MAP_RATIO_X * 7, // down left corner
         y1: CANVAS_MAP_Y - CANVAS_OBSTACLES_MAP_RATIO_Y,
 
@@ -173,6 +182,7 @@ export const CANVAS_OBSTACLES = [
     },
     //up_left_horizontal:
     {
+        horizontal: true,
         x1: -CANVAS_MAP_X + CANVAS_OBSTACLES_MAP_RATIO_X, //down left corner
         y1: -CANVAS_MAP_Y + CANVAS_OBSTACLES_MAP_RATIO_Y * 2,
 
@@ -187,6 +197,7 @@ export const CANVAS_OBSTACLES = [
     },
     //up_left_vertical:
     {
+        horizontal: false,
         x1: -CANVAS_MAP_X + CANVAS_OBSTACLES_MAP_RATIO_X * 5, //down left corner
         y1: -CANVAS_MAP_Y + CANVAS_OBSTACLES_MAP_RATIO_Y * 7,
 
@@ -201,6 +212,7 @@ export const CANVAS_OBSTACLES = [
     },
     //up_right_horizontal:
     {
+        horizontal: true,
         x1: CANVAS_MAP_X - CANVAS_OBSTACLES_MAP_RATIO_X * 9, // down left corner
         y1: -CANVAS_MAP_Y + CANVAS_OBSTACLES_MAP_RATIO_Y * 2,
 
@@ -215,6 +227,7 @@ export const CANVAS_OBSTACLES = [
     },
     //up_right_vercital:
     {
+        horizontal: false,
         x1: CANVAS_MAP_X - CANVAS_OBSTACLES_MAP_RATIO_X * 7, // down left corner
         y1: -CANVAS_MAP_Y + CANVAS_OBSTACLES_MAP_RATIO_Y * 7,
 

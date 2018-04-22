@@ -1,10 +1,19 @@
 <template>
   <v-container fluid>
     <v-card style="max-width: 600px; margin: auto;">
-    <v-layout row wrap>
-      <v-flex xs12 class="text-xs-center" mt-5>
-        <h1>Sign Up</h1>
-      </v-flex>
+      <v-card-media
+          class="white--text"
+          height="200px"
+          src="/static/test.png"
+        >
+          <v-container fill-height fluid>
+            <v-layout fill-height>
+              <v-flex xs12 align-end flexbox>
+                <span class="headline">Sign up</span>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card-media>
       <v-flex xs12 sm6 offset-sm3 mt-3>
         <form @submit.prevent="userSignUp">
           <v-layout column>
@@ -47,7 +56,6 @@
           </v-layout>
         </form>
       </v-flex>
-    </v-layout>
     </v-card>
   </v-container>
 </template>

@@ -38,8 +38,12 @@ export default class Shot {
             p5.stroke(this.color); // Then we draw our special object with different options
             p5.strokeWeight(params.SHOT_STROKE_WEIGHT);
             p5.fill(this.color);
-            p5.image(image, this.position.x - params.SHOT_RADIUS, this.position.y - params.SHOT_RADIUS, params.SHOT_RADIUS * 2, params.SHOT_RADIUS * 2 )
-            //p5.ellipse(this.position.x, this.position.y, params.SHOT_RADIUS * 2, params.SHOT_RADIUS * 2);
+            if(image) {
+                p5.image(image, this.position.x - params.SHOT_RADIUS, this.position.y - params.SHOT_RADIUS, params.SHOT_RADIUS * 2, params.SHOT_RADIUS * 2 )
+            }
+            else {
+                p5.ellipse(this.position.x, this.position.y, params.SHOT_RADIUS * 2, params.SHOT_RADIUS * 2);
+            }
         p5.pop(); // Then we restore the options to what they were before
     }
 

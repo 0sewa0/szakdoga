@@ -16,12 +16,18 @@ export default {
       script: null,
       ps: null,
       canvas: null,
+
+      minimal: false,
       backgroundIMG: require("../assets/background/black.png"),
       playerIMG: require("../assets/ships/ufoGreen.png"),
       enemyIMG: require("../assets/ships/ufoRed.png"),
       playerShotIMG: require("../assets/shot/laserBlue08.png"),
       enemyShotIMG: require("../assets/shot/laserRed08.png"),
-      shieldIMG: require("../assets/shield/shield3.png")
+      shieldIMG: require("../assets/shield/shield3.png"),
+      wallHorizontalIMG: require("../assets/wall_horizontal.png"),
+      wallVerticalIMG: require("../assets/wall_vertical.png"),
+      borderHorizontalIMG: require("../assets/border_horizontal.png"),
+      borderVerticalIMG: require("../assets/border_vertical.png")
     };
   },
   beforeDestroy() {
@@ -42,22 +48,7 @@ export default {
           let spawn = [];
           const enemyUnits = [];
 
-          const socket = io.connect("http://localhost:3000");
-          this.$store.commit("setSocket", socket);
-          socket.on("connect_error", error => {
-            socket.close();
-            this.$destroy;
-            this.$store.dispatch("goHome", "Couldn't reach the server!");
-            this.$store.commit("setLoading", false);
-          });
-          socket.on("goHome", data => {
-            socket.close();
-            this.$destroy;
-            this.$store.dispatch("goHome", data);
-            this.$store.commit("setLoading", false);
-          });
-
-          socket.emit("userCheck", this.$store.getters.getUserName.email);
+          let socket;
 
           p5.preload = _ => {
             this.backgroundIMG = p5.loadImage(this.backgroundIMG);
@@ -66,6 +57,26 @@ export default {
             this.enemyShotIMG = p5.loadImage(this.enemyShotIMG);
             this.playerShotIMG = p5.loadImage(this.playerShotIMG);
             this.shieldIMG = p5.loadImage(this.shieldIMG);
+            this.wallHorizontalIMG = p5.loadImage(this.wallHorizontalIMG);
+            this.wallVerticalIMG = p5.loadImage(this.wallVerticalIMG);
+            this.borderHorizontalIMG = p5.loadImage(this.borderHorizontalIMG);
+            this.borderVerticalIMG = p5.loadImage(this.borderVerticalIMG);
+            socket = io.connect("http://localhost:3000");
+            this.$store.commit("setSocket", socket);
+            socket.on("connect_error", error => {
+              socket.close();
+              this.$destroy;
+              this.$store.dispatch("goHome", "Couldn't reach the server!");
+              this.$store.commit("setLoading", false);
+            });
+            socket.on("goHome", data => {
+              socket.close();
+              this.$destroy;
+              this.$store.dispatch("goHome", data);
+              this.$store.commit("setLoading", false);
+            });
+
+            socket.emit("userCheck", this.$store.getters.getUserName.email);
           };
 
           p5.setup = _ => {
@@ -75,6 +86,7 @@ export default {
             ); // Creates the area that the player sees
             this.canvas.parent(this.$refs.canvas);
             spawn = params.CANVAS_SPAWN_POINTS();
+
             socket.on("heartbeat", data => {
               data.players.forEach(player => {
                 if (playerUnit && player.id != playerUnit.id) {
@@ -95,8 +107,10 @@ export default {
                       player.name,
                       player.spawn
                     );
-                    tmp.bodyIMG = this.enemyIMG;
-                    tmp.shieldIMG = this.shieldIMG;
+                    if (!this.minimal) {
+                      tmp.bodyIMG = this.enemyIMG;
+                      tmp.shieldIMG = this.shieldIMG;
+                    }
                     enemyUnits.push(tmp);
                   }
                 }
@@ -140,8 +154,10 @@ export default {
                 this.$store.getters.getDisplayName,
                 data.spawnPoint
               ); // Creates the player unit
-              playerUnit.bodyIMG = this.playerIMG;
-              playerUnit.shieldIMG = this.shieldIMG;
+              if (!this.minimal) {
+                playerUnit.bodyIMG = this.playerIMG;
+                playerUnit.shieldIMG = this.shieldIMG;
+              }
               socket.emit("start", {
                 id: playerUnit.id,
                 user: playerUnit.user,
@@ -176,13 +192,16 @@ export default {
           p5.draw = _ => {
             if (playerUnit) {
               p5.background(params.CANVAS_COLOR);
-              p5.image(
-                this.backgroundIMG,
-                0,
-                0,
-                params.CANVAS_SIZE_X,
-                params.CANVAS_SIZE_Y
-              );
+              if (!this.minimal) {
+                p5.image(
+                  this.backgroundIMG,
+                  0,
+                  0,
+                  params.CANVAS_SIZE_X,
+                  params.CANVAS_SIZE_Y
+                );
+              }
+
               p5.translate(p5.width / 2, p5.height / 2); // Translates the canvas so the player is always in the middle of the screen (the other translate* command is also needed for        this to happen)
               let updatedZoom =
                 (params.CANVAS_ZOOM_BASE +
@@ -227,7 +246,7 @@ export default {
                       let index = enemy.shots.indexOf(shot);
                       enemy.shots.splice(index, 1); //Removes the shot from the array (consequently removeing it from the game)
                     } else {
-                      shot.show(this.enemyShotIMG); //Draws the shot
+                      shot.show(!this.minimal ? this.enemyShotIMG : null); //Draws the shot
                     }
                   });
                 }
@@ -238,7 +257,7 @@ export default {
                   let index = playerUnit.shots.indexOf(shot);
                   playerUnit.shots.splice(index, 1); //Removes the shot from the array (consequently removeing it from the game)
                 } else {
-                  shot.show(this.playerShotIMG);
+                  shot.show(!this.minimal ? this.playerShotIMG : null);
                 }
               });
               playerUnit.show(inGame); // Draws the player unit
@@ -291,30 +310,53 @@ export default {
             p5.noStroke();
             p5.fill(params.CANVAS_OBSTACLES_COLOR);
             params.CANVAS_OBSTACLES.forEach(obstacle => {
-              p5.quad(
-                obstacle.x1,
-                obstacle.y1,
-                obstacle.x2,
-                obstacle.y2,
-                obstacle.x3,
-                obstacle.y3,
-                obstacle.x4,
-                obstacle.y4
-              );
+              if (this.minimal) {
+                p5.quad(
+                  obstacle.x1,
+                  obstacle.y1,
+                  obstacle.x2,
+                  obstacle.y2,
+                  obstacle.x3,
+                  obstacle.y3,
+                  obstacle.x4,
+                  obstacle.y4
+                );
+                p5.ellipse(
+                  params.CANVAS_OBSTACLES_CENTER_PIECE.x,
+                  params.CANVAS_OBSTACLES_CENTER_PIECE.y,
+                  params.CANVAS_OBSTACLES_CENTER_PIECE.r1,
+                  params.CANVAS_OBSTACLES_CENTER_PIECE.r2
+                );
+              } else {
+                if (obstacle.horizontal) {
+                  p5.image(
+                    this.wallHorizontalIMG,
+                    obstacle.x2,
+                    obstacle.y2,
+                    Math.abs(obstacle.x3 - obstacle.x2),
+                    Math.abs(obstacle.y2 - obstacle.y1)
+                  );
+                } else {
+                  p5.image(
+                    this.wallVerticalIMG,
+                    obstacle.x2,
+                    obstacle.y2,
+                    Math.abs(obstacle.x3 - obstacle.x2),
+                    Math.abs(obstacle.y2 - obstacle.y1)
+                  );
+                }
+
+                p5.image(
+                  this.shieldIMG,
+                  params.CANVAS_OBSTACLES_CENTER_PIECE.x -
+                    params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / 2,
+                  params.CANVAS_OBSTACLES_CENTER_PIECE.y -
+                    params.CANVAS_OBSTACLES_CENTER_PIECE.r2 / 2,
+                  params.CANVAS_OBSTACLES_CENTER_PIECE.r1,
+                  params.CANVAS_OBSTACLES_CENTER_PIECE.r2
+                );
+              }
             });
-            p5.image(
-                this.shieldIMG,
-                params.CANVAS_OBSTACLES_CENTER_PIECE.x - params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / 2,
-                params.CANVAS_OBSTACLES_CENTER_PIECE.y - params.CANVAS_OBSTACLES_CENTER_PIECE.r2 / 2,
-                params.CANVAS_OBSTACLES_CENTER_PIECE.r1,
-                params.CANVAS_OBSTACLES_CENTER_PIECE.r2);
-            /*
-            p5.ellipse(
-              params.CANVAS_OBSTACLES_CENTER_PIECE.x,
-              params.CANVAS_OBSTACLES_CENTER_PIECE.y,
-              params.CANVAS_OBSTACLES_CENTER_PIECE.r1,
-              params.CANVAS_OBSTACLES_CENTER_PIECE.r2
-            );*/
             p5.pop();
             p5.showCenterPieceText();
           };
@@ -362,16 +404,36 @@ export default {
             p5.noStroke();
             p5.fill(params.CANVAS_BORDER_COLOR);
             params.CANVAS_BORDERS.forEach(border => {
-              p5.quad(
-                border.x1,
-                border.y1,
-                border.x2,
-                border.y2,
-                border.x3,
-                border.y3,
-                border.x4,
-                border.y4
-              );
+              if (this.minimal) {
+                p5.quad(
+                  border.x1,
+                  border.y1,
+                  border.x2,
+                  border.y2,
+                  border.x3,
+                  border.y3,
+                  border.x4,
+                  border.y4
+                );
+              } else {
+                if (border.horizontal) {
+                  p5.image(
+                    this.borderHorizontalIMG,
+                    border.x4,
+                    border.y4,
+                    Math.abs(border.x4 - border.x3),
+                    Math.abs(border.y2 - border.y3)
+                  );
+                } else {
+                  p5.image(
+                    this.borderVerticalIMG,
+                    border.x4,
+                    border.y4,
+                    Math.abs(border.x4 - border.x3),
+                    Math.abs(border.y2 - border.y3)
+                  );
+                }
+              }
             });
             p5.pop();
           };

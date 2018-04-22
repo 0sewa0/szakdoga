@@ -9,7 +9,13 @@ import { store } from './store'
 import firebase from 'firebase'
 
 
-Vue.use(Vuetify)
+Vue.use(Vuetify, {
+  theme: {
+    primary: "#E53935",
+    secondary: "#FFCDD2",
+    accent: "#3F51B5"
+  }
+})
 
 
 firebase.initializeApp({

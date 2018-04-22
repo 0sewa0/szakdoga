@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-      <div ref="canvas"></div>
+      <div ref="canvas" fluid></div>
   </v-container>
 </template>
 
@@ -20,7 +20,8 @@ export default {
       playerIMG: require("../assets/ships/ufoGreen.png"),
       enemyIMG: require("../assets/ships/ufoRed.png"),
       playerShotIMG: require("../assets/shot/laserBlue08.png"),
-      enemyShotIMG: require("../assets/shot/laserRed08.png")
+      enemyShotIMG: require("../assets/shot/laserRed08.png"),
+      shieldIMG: require("../assets/shield/shield3.png")
     };
   },
   beforeDestroy() {
@@ -33,7 +34,6 @@ export default {
       } else {
         this.script = p5 => {
           window.p5 = p5;
-
           let playerUnit;
           let inGame = false;
           let leaderboard = [];
@@ -65,6 +65,7 @@ export default {
             this.enemyIMG = p5.loadImage(this.enemyIMG);
             this.enemyShotIMG = p5.loadImage(this.enemyShotIMG);
             this.playerShotIMG = p5.loadImage(this.playerShotIMG);
+            this.shieldIMG = p5.loadImage(this.shieldIMG);
           };
 
           p5.setup = _ => {
@@ -86,16 +87,17 @@ export default {
                     enemy.score = player.score;
                     enemy.shield = player.shield;
                   } else {
-                    enemyUnits.push(
-                      new Unit(
-                        player.positionX,
-                        player.positionY,
-                        player.user,
-                        player.id,
-                        player.name,
-                        player.spawn
-                      )
+                    let tmp = new Unit(
+                      player.positionX,
+                      player.positionY,
+                      player.user,
+                      player.id,
+                      player.name,
+                      player.spawn
                     );
+                    tmp.bodyIMG = this.enemyIMG;
+                    tmp.shieldIMG = this.shieldIMG;
+                    enemyUnits.push(tmp);
                   }
                 }
               });
@@ -138,6 +140,8 @@ export default {
                 this.$store.getters.getDisplayName,
                 data.spawnPoint
               ); // Creates the player unit
+              playerUnit.bodyIMG = this.playerIMG;
+              playerUnit.shieldIMG = this.shieldIMG;
               socket.emit("start", {
                 id: playerUnit.id,
                 user: playerUnit.user,
@@ -172,7 +176,13 @@ export default {
           p5.draw = _ => {
             if (playerUnit) {
               p5.background(params.CANVAS_COLOR);
-              p5.image(this.backgroundIMG, 0, 0, params.CANVAS_SIZE_X, params.CANVAS_SIZE_Y)
+              p5.image(
+                this.backgroundIMG,
+                0,
+                0,
+                params.CANVAS_SIZE_X,
+                params.CANVAS_SIZE_Y
+              );
               p5.translate(p5.width / 2, p5.height / 2); // Translates the canvas so the player is always in the middle of the screen (the other translate* command is also needed for        this to happen)
               let updatedZoom =
                 (params.CANVAS_ZOOM_BASE +
@@ -208,7 +218,7 @@ export default {
                     playerUnit.velocity.mult(-params.UNIT_BOUNCE_OFF); //Rotates the direction of the players movement making a bounce effect
                   }
                 }
-                enemy.show(this.enemyIMG); // Draws the unit
+                enemy.show(); // Draws the unit
                 if (enemy.shots != undefined) {
                   //Iterates over all the shots of the enemy unit
                   enemy.shots.forEach(shot => {
@@ -231,7 +241,7 @@ export default {
                   shot.show(this.playerShotIMG);
                 }
               });
-              playerUnit.show(this.playerIMG, inGame); // Draws the player unit
+              playerUnit.show(inGame); // Draws the player unit
               if (inGame) {
                 socket.emit("update", {
                   positionX: playerUnit.bodyPosition.x,
@@ -292,12 +302,19 @@ export default {
                 obstacle.y4
               );
             });
+            p5.image(
+                this.shieldIMG,
+                params.CANVAS_OBSTACLES_CENTER_PIECE.x - params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / 2,
+                params.CANVAS_OBSTACLES_CENTER_PIECE.y - params.CANVAS_OBSTACLES_CENTER_PIECE.r2 / 2,
+                params.CANVAS_OBSTACLES_CENTER_PIECE.r1,
+                params.CANVAS_OBSTACLES_CENTER_PIECE.r2);
+            /*
             p5.ellipse(
               params.CANVAS_OBSTACLES_CENTER_PIECE.x,
               params.CANVAS_OBSTACLES_CENTER_PIECE.y,
               params.CANVAS_OBSTACLES_CENTER_PIECE.r1,
               params.CANVAS_OBSTACLES_CENTER_PIECE.r2
-            );
+            );*/
             p5.pop();
             p5.showCenterPieceText();
           };
@@ -307,7 +324,7 @@ export default {
             p5.textAlign(p5.CENTER);
             p5.textSize(params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / 13);
             p5.textStyle(p5.BOLD);
-            p5.fill("rgb(69, 76, 89)");
+            p5.fill("#71C937");
             p5.text(
               "LEADERBOARD",
               params.CANVAS_OBSTACLES_CENTER_PIECE.x,
@@ -364,11 +381,15 @@ export default {
           };
         };
         const P5 = require("p5");
+        P5.disableFriendlyErrors = true;
         this.ps = new P5(this.script);
+        this.ps.disableFriendlyErrors = true;
       }
     }
   },
-  mounted() { this.game() }
+  mounted() {
+    this.game();
+  }
 };
 </script>
 

@@ -1,5 +1,6 @@
 <template>
-  <v-container fluid>
+<v-container fluid>
+  <v-card style="max-width: 600px; margin: auto;">
     <v-layout row wrap>
       <v-flex xs12 class="text-xs-center" mt-5>
         <h1>Sign In</h1>
@@ -37,6 +38,7 @@
         </form>
       </v-flex>
     </v-layout>
+   </v-card>
   </v-container>
 </template>
 

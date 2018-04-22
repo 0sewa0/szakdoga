@@ -3,7 +3,7 @@
 //UNIT parameters
 export const UNIT_RADIUS = 40;
 export const UNIT_BASE_COLOR = 'rgb(255, 214, 138)';//#ffd68a
-export const UNIT_BASE_TRAIL_COLOR = 'rgb(102, 217, 237)';//#66d9ed
+export const UNIT_BASE_TRAIL_COLOR = 'rgba(102, 217, 237,0.25)';//#66d9ed
 export const UNIT_INACTIVE_COLOR = 'rgb(224, 108, 117)'; //#e06c75
 export const UNIT_STROKE_WEIGHT = 1;
 export const UNIT_FRICTION = 0.88;

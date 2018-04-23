@@ -35,7 +35,10 @@ export default {
   },
   methods: {
     game() {
-      if (!this.$store.getters.getDisplayName) {
+      if (
+        this.$store.getters.getUserName &&
+        !this.$store.getters.getDisplayName
+      ) {
         this.$store.dispatch("goHome", "This is not the way");
       } else {
         this.script = p5 => {
@@ -51,6 +54,7 @@ export default {
           let socket;
 
           p5.preload = _ => {
+            spawn = params.CANVAS_SPAWN_POINTS();
             this.backgroundIMG = p5.loadImage(this.backgroundIMG);
             this.playerIMG = p5.loadImage(this.playerIMG);
             this.enemyIMG = p5.loadImage(this.enemyIMG);
@@ -63,12 +67,14 @@ export default {
             this.borderVerticalIMG = p5.loadImage(this.borderVerticalIMG);
             socket = io.connect("http://localhost:3000");
             this.$store.commit("setSocket", socket);
+
             socket.on("connect_error", error => {
               socket.close();
               this.$destroy;
               this.$store.dispatch("goHome", "Couldn't reach the server!");
               this.$store.commit("setLoading", false);
             });
+
             socket.on("goHome", data => {
               socket.close();
               this.$destroy;
@@ -76,16 +82,42 @@ export default {
               this.$store.commit("setLoading", false);
             });
 
-            socket.emit("userCheck", this.$store.getters.getUserName.email);
-          };
-
-          p5.setup = _ => {
-            this.canvas = p5.createCanvas(
-              params.CANVAS_SIZE_X,
-              params.CANVAS_SIZE_Y
-            ); // Creates the area that the player sees
-            this.canvas.parent(this.$refs.canvas);
-            spawn = params.CANVAS_SPAWN_POINTS();
+            socket.on("spawn", data => {
+              inGame = true;
+              if (this.$store.getters.getUserName) {
+                playerUnit = new Unit(
+                  spawn[data.spawnPoint].x,
+                  spawn[data.spawnPoint].y,
+                  this.$store.getters.getUserName.email,
+                  data.id,
+                  this.$store.getters.getDisplayName,
+                  data.spawnPoint
+                ); // Creates the player unit
+              } else {
+                playerUnit = new Unit(
+                  spawn[data.spawnPoint].x,
+                  spawn[data.spawnPoint].y,
+                  data.forGuests,
+                  data.id,
+                  data.forGuests,
+                  data.spawnPoint
+                ); // Creates the guest player unit
+              }
+              if (!this.minimal) {
+                playerUnit.bodyIMG = this.playerIMG;
+                playerUnit.shieldIMG = this.shieldIMG;
+              }
+              socket.emit("start", {
+                id: playerUnit.id,
+                user: playerUnit.user,
+                name: playerUnit.name,
+                positionX: playerUnit.bodyPosition.x,
+                positionY: playerUnit.bodyPosition.y,
+                spawn: data.spawnPoint
+              });
+              inGame = true;
+              this.$store.commit("setLoading", false);
+            });
 
             socket.on("heartbeat", data => {
               data.players.forEach(player => {
@@ -144,32 +176,6 @@ export default {
               leaderboard = data.leaderboard;
             });
 
-            socket.on("spawn", data => {
-              inGame = true;
-              playerUnit = new Unit(
-                spawn[data.spawnPoint].x,
-                spawn[data.spawnPoint].y,
-                this.$store.getters.getUserName.email,
-                data.id,
-                this.$store.getters.getDisplayName,
-                data.spawnPoint
-              ); // Creates the player unit
-              if (!this.minimal) {
-                playerUnit.bodyIMG = this.playerIMG;
-                playerUnit.shieldIMG = this.shieldIMG;
-              }
-              socket.emit("start", {
-                id: playerUnit.id,
-                user: playerUnit.user,
-                name: playerUnit.name,
-                positionX: playerUnit.bodyPosition.x,
-                positionY: playerUnit.bodyPosition.y,
-                spawn: data.spawnPoint
-              });
-              inGame = true;
-              this.$store.commit("setLoading", false);
-            });
-
             socket.on("gotHit", data => {
               inGame = false;
               playerUnit.bodyPosition.x = spawn[playerUnit.spawn].x;
@@ -187,6 +193,21 @@ export default {
                 );
               }
             });
+            if(this.$store.getters.getUserName) {
+                socket.emit("userCheck", this.$store.getters.getUserName.email);
+            } else {
+                this.$store.dispatch('setGuest');
+                this.minimal = this.$store.getters.getMinimal;
+                socket.emit("userCheck", null);
+            }
+          };
+
+          p5.setup = _ => {
+            this.canvas = p5.createCanvas(
+              params.CANVAS_SIZE_X,
+              params.CANVAS_SIZE_Y
+            ); // Creates the area that the player sees
+            this.canvas.parent(this.$refs.canvas);
           };
 
           p5.draw = _ => {

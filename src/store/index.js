@@ -16,7 +16,8 @@ export const store = new Vuex.Store({
 
     //Game state
     displayName: null,
-    socket: null
+    socket: null,
+    minimal: false,
   },
   mutations: {
     setUser (state, payload) {
@@ -34,11 +35,14 @@ export const store = new Vuex.Store({
     setSocket(state, payload) {
       if(state.socket) {
         state.socket.close();
-        state.socket = payload
+        state.socket = payload;
       } else {
-        state.socket = payload
+        state.socket = payload;
       }
     },
+    setMinimal(state, payload) {
+      state.minimal = payload;
+    }
   },
   actions: {
     userSignUp ({commit}, payload) {
@@ -85,6 +89,9 @@ export const store = new Vuex.Store({
       commit('setDisplayName', null)
       router.push('/home')
     },
+    setGuest({commit}) {
+      commit('setMinimal', true);
+    }
 
   },
   getters: {
@@ -93,5 +100,6 @@ export const store = new Vuex.Store({
     getUserName: (state) => state.user,
     //Game
     getDisplayName: (state) => state.displayName,
+    getMinimal: (state) => state.minimal,
   }
 })

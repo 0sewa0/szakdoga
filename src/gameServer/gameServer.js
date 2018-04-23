@@ -35,10 +35,15 @@ io.sockets.on('connection', socket => {
         socket.disconnect();
     }
     socket.on('userCheck', data => {
+        if(!data) {
+            data = 'GUEST' + guestCounter;
+            guestCounter++;
+        }
         if(!findUser(data)) {
             connectionCounter++
             socket.emit('spawn', {
                 id: socket.id,
+                forGuests: data,
                 spawnPoint: availableSpawn[Math.floor(Math.random() * availableSpawn.length)],
                 guestNumber: guestCounter
             });

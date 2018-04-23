@@ -13,6 +13,7 @@
       <v-flex xs12 sm6 offset-sm3 class="text-xs-center" mt-5>
         <v-btn color="primary" to="/signup" v-show="notAuthorized">Sign Up</v-btn>
         <v-btn to="/signin" v-show="notAuthorized">Sign In</v-btn>
+        <v-btn to="/game" v-show="notAuthorized">Play as a Guest</v-btn>
       </v-flex>
     </v-layout>
   </v-container>

@@ -31,6 +31,8 @@ export default {
     };
   },
   beforeDestroy() {
+    this.ps = null;
+    window.p5 = null;
     this.$store.commit("setSocket", null);
   },
   methods: {
@@ -54,6 +56,7 @@ export default {
           let socket;
 
           p5.preload = _ => {
+            this.minimal = this.$store.getters.getMinimal;
             spawn = params.CANVAS_SPAWN_POINTS();
             this.backgroundIMG = p5.loadImage(this.backgroundIMG);
             this.playerIMG = p5.loadImage(this.playerIMG);
@@ -387,7 +390,7 @@ export default {
             p5.textAlign(p5.CENTER);
             p5.textSize(params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / 13);
             p5.textStyle(p5.BOLD);
-            p5.fill("#71C937");
+            p5.fill("#E53935");
             p5.text(
               "LEADERBOARD",
               params.CANVAS_OBSTACLES_CENTER_PIECE.x,

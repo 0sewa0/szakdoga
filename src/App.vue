@@ -4,6 +4,11 @@
     <v-toolbar app>
       <v-toolbar-title>
         <router-link to="/" tag="span" style="cursor: pointer">
+        <v-avatar
+          size="50"
+        >
+        <img src="/static/ufoBlue.png">
+        </v-avatar>
           {{ appTitle }}
         </router-link>
       </v-toolbar-title>

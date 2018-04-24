@@ -213,6 +213,7 @@ export default class Unit {
                 if(this.bodyIMG) {
                     p5.image(this.bodyIMG, this.bodyPosition.x - params.UNIT_RADIUS, this.bodyPosition.y - params.UNIT_RADIUS, params.UNIT_RADIUS * 2, params.UNIT_RADIUS * 2);
                 } else {
+                    p5.fill(this.bodyColor)
                     p5.stroke(this.bodyColor);
                     p5.strokeWeight(params.UNIT_STROKE_WEIGHT);
                     p5.ellipse(this.bodyPosition.x, this.bodyPosition.y, params.UNIT_RADIUS * 2, params.UNIT_RADIUS * 2);

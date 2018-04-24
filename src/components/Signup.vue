@@ -4,7 +4,7 @@
       <v-card-media
           class="white--text"
           height="200px"
-          src="/static/test.png"
+          src="/static/sign.png"
         >
           <v-container fill-height fluid>
             <v-layout fill-height>
@@ -24,6 +24,7 @@
             </v-flex>
             <v-flex>
               <v-text-field
+                color="secondary"
                 name="email"
                 label="Email"
                 id="email"
@@ -33,6 +34,7 @@
             </v-flex>
             <v-flex>
               <v-text-field
+                color="secondary"
                 name="password"
                 label="Password"
                 id="password"
@@ -42,6 +44,7 @@
             </v-flex>
             <v-flex>
               <v-text-field
+                color="secondary"
                 name="confirmPassword"
                 label="Confirm Password"
                 id="confirmPassword"

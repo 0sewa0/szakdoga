@@ -32,7 +32,6 @@ io.sockets.on('connection', socket => {
     console.log(`New Connection: ${socket.id}`);
     if(connectionCounter >= 12) {
         socket.emit('goHome', "Server full");
-        socket.disconnect();
     }
     socket.on('userCheck', data => {
         if(!data) {
@@ -49,7 +48,6 @@ io.sockets.on('connection', socket => {
             });
         } else {
             socket.emit('goHome', "Already in game!");
-            socket.disconnect();
         }
     });
 

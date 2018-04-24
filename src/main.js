@@ -11,9 +11,9 @@ import firebase from 'firebase'
 
 Vue.use(Vuetify, {
   theme: {
-    primary: "#E53935",
-    secondary: "#FFCDD2",
-    accent: "#3F51B5"
+    primary: "#222439",
+    secondary: "#7986CB",
+    accent: "#42A5F5"
   }
 })
 

@@ -9,7 +9,7 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
   state: {
     //App state
-    appTitle: 'Boop.io',
+    appTitle: "Free-For-All 2D Arena",
     user: null,
     error: null,
     loading: false,
@@ -22,7 +22,7 @@ export const store = new Vuex.Store({
   mutations: {
     setUser (state, payload) {
         state.user = payload;
-      },
+    },
     setError (state, payload) {
       state.error = payload;
     },
@@ -34,6 +34,7 @@ export const store = new Vuex.Store({
     },
     setSocket(state, payload) {
       if(state.socket) {
+        state.socket.disconnect();
         state.socket.close();
         state.socket = payload;
       } else {
@@ -82,12 +83,14 @@ export const store = new Vuex.Store({
       router.push('/')
     },
     startGame({commit}, payload) {
+        commit('setError', null)
         commit('setDisplayName', payload.displayName)
         router.push('/game')
     },
-    goHome({commit}, payload) {
-      commit('setDisplayName', null)
-      router.push('/home')
+    goHome({commit, state}, payload) {
+      commit('setDisplayName', null);
+      (state.user) ? router.push('/home') : router.push('/');
+      commit('setError', payload);
     },
     setGuest({commit}) {
       commit('setMinimal', true);

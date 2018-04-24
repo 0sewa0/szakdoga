@@ -1,10 +1,20 @@
 <template>
 <v-container fluid>
   <v-card style="max-width: 600px; margin: auto;">
+    <v-card-media
+          class="white--text"
+          height="200px"
+          src="/static/sign.png"
+        >
+          <v-container fill-height fluid>
+            <v-layout fill-height>
+              <v-flex xs12 align-end flexbox>
+                <span class="headline">Sign in</span>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card-media>
     <v-layout row wrap>
-      <v-flex xs12 class="text-xs-center" mt-5>
-        <h1>Sign In</h1>
-      </v-flex>
       <v-flex xs12 sm6 offset-sm3 mt-3>
         <form @submit.prevent="userSignIn">
           <v-layout column>
@@ -15,6 +25,7 @@
             </v-flex>
             <v-flex>
               <v-text-field
+                color="secondary"
                 name="email"
                 label="Email"
                 id="email"
@@ -24,6 +35,7 @@
             </v-flex>
             <v-flex>
               <v-text-field
+                color="secondary"
                 name="password"
                 label="Password"
                 id="password"

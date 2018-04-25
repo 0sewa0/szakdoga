@@ -51,6 +51,7 @@ export const store = new Vuex.Store({
       firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
       .then(firebaseUser => {
        commit('setUser', {email: firebaseUser.email})
+       commit('setMinimal', false)
        commit('setLoading', false)
        commit('setError', null)
        router.push('/home')
@@ -65,6 +66,7 @@ export const store = new Vuex.Store({
       firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
       .then(firebaseUser => {
         commit('setUser', {email: firebaseUser.email})
+        commit('setMinimal', false)
         commit('setLoading', false)
         commit('setError', null)
         router.push('/home')
@@ -76,10 +78,12 @@ export const store = new Vuex.Store({
     },
     autoSignIn ({commit}, payload) {
       commit('setUser', {email: payload.email})
+      commit('setMinimal', false)
     },
     userSignOut ({commit}) {
       firebase.auth().signOut()
       commit('setUser', null)
+      commit('setMinimal', true)
       router.push('/')
     },
     startGame({commit}, payload) {

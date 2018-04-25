@@ -31,6 +31,7 @@ export default {
     };
   },
   beforeDestroy() {
+    this.script = null;
     this.ps = null;
     window.p5 = null;
     this.$store.commit("setSocket", null);
@@ -469,7 +470,6 @@ export default {
         const P5 = require("p5");
         P5.disableFriendlyErrors = true;
         this.ps = new P5(this.script);
-        this.ps.disableFriendlyErrors = true;
       }
     }
   },

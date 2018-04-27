@@ -39,7 +39,7 @@ io.sockets.on('connection', socket => {
             guestCounter++;
         }
         if(!findUser(data)) {
-            connectionCounter++
+            connectionCounter++;
             socket.emit('spawn', {
                 id: socket.id,
                 forGuests: data,

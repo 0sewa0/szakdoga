@@ -12,6 +12,7 @@
                             </v-alert>
                         </v-flex>
                         <v-text-field
+                            color ='secondary'
                             id = "dname"
                             name="displayName"
                             label="Display Name"
@@ -21,11 +22,10 @@
                         <v-switch
                           label="Minimal"
                           v-model="minimal"
-                          color="red darken-3"
-                          value="red darken-3"
+                          color="accent"
                           hide-details
                         ></v-switch>
-                        <v-btn color="primary" type="submit"> Start a game </v-btn>
+                        <v-btn color="primary" type="submit"> Start game </v-btn>
                     </v-layout>
                 </form>
           </v-flex>

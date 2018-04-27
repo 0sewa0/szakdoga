@@ -38,9 +38,7 @@
           </v-container>
         </v-dialog>
       </v-layout>
-      <v-fade-transition>
-      <router-view v-show="!loading"></router-view>
-      </v-fade-transition>
+      <router-view></router-view>
     </v-content>
   </v-app>
 </template>

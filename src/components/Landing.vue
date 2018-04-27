@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-card style="max-width: 1400px; margin: auto;">
-      <v-parallax src="/static/sign.png">
+      <v-parallax src="/static/simpleufo.jpg">
        <v-layout row wrap>
         <v-flex xs12 class="text-xs-center" mt-5>
           <h1>Welcome to {{appTitle}}</h1>
@@ -26,7 +26,7 @@
       </v-parallax>
     </v-card>
 <br>
-    <v-card style="max-width: 1400px; margin: auto;">
+    <v-card style="max-width: 1400px; margin: auto;" v-show="notAuthorized">
       <v-card-media src="/static/diff.png" height="250px">
       </v-card-media>
       <v-layout row wrap>

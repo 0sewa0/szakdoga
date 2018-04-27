@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-      <div ref="canvas" fluid></div>
+      <div ref="canvas"></div>
   </v-container>
 </template>
 
@@ -18,6 +18,7 @@ export default {
       canvas: null,
 
       minimal: false,
+      user: null,
       backgroundIMG: require("../assets/background/black.png"),
       playerIMG: require("../assets/ships/ufoGreen.png"),
       enemyIMG: require("../assets/ships/ufoRed.png"),
@@ -46,7 +47,7 @@ export default {
       } else {
         this.script = p5 => {
           window.p5 = p5;
-          let playerUnit;
+          let playerUnit = null;
           let inGame = false;
           let leaderboard = [];
           let border;
@@ -57,6 +58,10 @@ export default {
           let socket;
 
           p5.preload = _ => {
+            this.user = this.$store.getters.getUserName
+            if(this.user) {
+              this.user = this.user.email
+            }
             this.minimal = this.$store.getters.getMinimal;
             spawn = params.CANVAS_SPAWN_POINTS();
             this.backgroundIMG = p5.loadImage(this.backgroundIMG);
@@ -87,12 +92,11 @@ export default {
             });
 
             socket.on("spawn", data => {
-              inGame = true;
-              if (this.$store.getters.getUserName) {
+              if (this.user) {
                 playerUnit = new Unit(
                   spawn[data.spawnPoint].x,
                   spawn[data.spawnPoint].y,
-                  this.$store.getters.getUserName.email,
+                  this.user,
                   data.id,
                   this.$store.getters.getDisplayName,
                   data.spawnPoint
@@ -197,8 +201,8 @@ export default {
                 );
               }
             });
-            if(this.$store.getters.getUserName) {
-                socket.emit("userCheck", this.$store.getters.getUserName.email);
+            if(this.user) {
+                socket.emit("userCheck", this.user.email);
             } else {
                 this.$store.dispatch('setGuest');
                 this.minimal = this.$store.getters.getMinimal;
@@ -212,10 +216,12 @@ export default {
               params.CANVAS_SIZE_Y
             ); // Creates the area that the player sees
             this.canvas.parent(this.$refs.canvas);
+            console.log(this.canvas);
           };
 
           p5.draw = _ => {
             if (playerUnit) {
+              console.log(playerUnit);
               p5.background(params.CANVAS_COLOR);
               if (!this.minimal) {
                 p5.image(
@@ -487,7 +493,6 @@ export default {
 html,
 body {
   width: 100%;
-  height: 100%;
 } /* just to be sure these are full screen*/
 canvas {
   display: block;

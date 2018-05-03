@@ -54,7 +54,6 @@ io.sockets.on('connection', socket => {
     socket.on('start', data => {
         players.push(new Player(data.id, data.user, data.name, data.spawn, data.positionX, data.positionY));
         availableSpawn.splice(availableSpawn.indexOf(data.spawn), 1);
-        guestCounter++;
     });
 
     socket.on('update', data => {

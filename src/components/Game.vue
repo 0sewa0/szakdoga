@@ -59,9 +59,11 @@ export default {
 
           p5.preload = _ => {
             this.user = this.$store.getters.getUserName
+            console.log(this.user)
             if(this.user) {
               this.user = this.user.email
             }
+            console.log(this.user)
             this.minimal = this.$store.getters.getMinimal;
             spawn = params.CANVAS_SPAWN_POINTS();
             this.backgroundIMG = p5.loadImage(this.backgroundIMG);
@@ -201,8 +203,9 @@ export default {
                 );
               }
             });
+
             if(this.user) {
-                socket.emit("userCheck", this.user.email);
+                socket.emit("userCheck", this.user);
             } else {
                 this.$store.dispatch('setGuest');
                 this.minimal = this.$store.getters.getMinimal;
@@ -216,12 +219,10 @@ export default {
               params.CANVAS_SIZE_Y
             ); // Creates the area that the player sees
             this.canvas.parent(this.$refs.canvas);
-            console.log(this.canvas);
           };
 
           p5.draw = _ => {
             if (playerUnit) {
-              console.log(playerUnit);
               p5.background(params.CANVAS_COLOR);
               if (!this.minimal) {
                 p5.image(
@@ -253,7 +254,7 @@ export default {
                 if (inGame) {
                   playerUnit.shots.forEach(shot => {
                     // Check if the given shot hit the enemy
-                    if (enemy.getHit(shot)) {
+                    if (enemy.getHit(shot) && shot.ttl > 0) {
                       if (!enemy.shield) {
                         playerUnit.score += 1;
                         socket.emit("enemyHit", {
@@ -268,7 +269,7 @@ export default {
                     playerUnit.velocity.mult(-params.UNIT_BOUNCE_OFF); //Rotates the direction of the players movement making a bounce effect
                   }
                 }
-                enemy.show(); // Draws the unit
+                enemy.show(); // Draws the enemy unit
                 if (enemy.shots != undefined) {
                   //Iterates over all the shots of the enemy unit
                   enemy.shots.forEach(shot => {
@@ -303,6 +304,7 @@ export default {
                   shots: p5.parseShots()
                 });
               }
+              console.log(inGame)
             }
           };
 
@@ -430,7 +432,6 @@ export default {
           };
 
           p5.showBorders = _ => {
-            //FIXME: Could be done simpler
             p5.push();
             p5.noStroke();
             p5.fill(params.CANVAS_BORDER_COLOR);

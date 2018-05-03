@@ -59,11 +59,9 @@ export default {
 
           p5.preload = _ => {
             this.user = this.$store.getters.getUserName
-            console.log(this.user)
             if(this.user) {
               this.user = this.user.email
             }
-            console.log(this.user)
             this.minimal = this.$store.getters.getMinimal;
             spawn = params.CANVAS_SPAWN_POINTS();
             this.backgroundIMG = p5.loadImage(this.backgroundIMG);
@@ -304,7 +302,6 @@ export default {
                   shots: p5.parseShots()
                 });
               }
-              console.log(inGame)
             }
           };
 

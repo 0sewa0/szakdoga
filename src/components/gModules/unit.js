@@ -30,7 +30,7 @@ export default class Unit {
     show(inGame = true) {
         this.drawBody(inGame);
         if (this.lastShot != 0) {
-            this.lastShot--; // FIXME: This should be handled on the server side
+            this.lastShot--;
         }
     }
 

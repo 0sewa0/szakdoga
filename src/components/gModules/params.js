@@ -31,8 +31,6 @@ export const CANVAS_MAP_Y = 1000;
 export const CANVAS_SIZE_X = window.innerWidth;
 export const CANVAS_SIZE_Y = window.innerHeight;
 export const CANVAS_COLOR = 'rgb(69, 76, 89)';//#454c59
-export const CANVAS_ZOOM_BASE = 64;
-export const CANVAS_ZOOM_MULTIPLIER = 3;
 
 export const CANVAS_TEXT_COLOR = 'rgb(69, 76, 89)'; //#454c59
 

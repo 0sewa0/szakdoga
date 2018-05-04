@@ -42,7 +42,7 @@ export default {
       if (
         this.$store.getters.getUserName &&
         !this.$store.getters.getDisplayName
-      ) {
+      ){
         this.$store.dispatch("goHome", "This is not the way");
       } else {
         this.script = p5 => {
@@ -227,18 +227,13 @@ export default {
                   this.backgroundIMG,
                   0,
                   0,
-                  params.CANVAS_SIZE_X,
-                  params.CANVAS_SIZE_Y
+                  p5.width,
+                  p5.height
                 );
               }
 
-              p5.translate(p5.width / 2, p5.height / 2); // Translates the canvas so the player is always in the middle of the screen (the other translate* command is also needed for        this to happen)
-              let updatedZoom =
-                (params.CANVAS_ZOOM_BASE +
-                  playerUnit.score * params.CANVAS_ZOOM_MULTIPLIER) /
-                params.UNIT_RADIUS;
-              zoom = p5.lerp(zoom, updatedZoom, 0.2); // This makes the zoom effect smoother with linear interpolation
-              p5.scale(zoom); // Scales (zooms in) according the player score, making the game harder
+              p5.translate(p5.width / 2, p5.height / 2); // Translates the canvas so the player is always in the middle of the screen (the other translate* command is also needed for this to happen)
+              p5.scale((p5.width * p5.height / (p5.width + p5.height))/500); // Scales (zooms in) increases the sice of everyhting after the this
               p5.translate(
                 -playerUnit.bodyPosition.x,
                 -playerUnit.bodyPosition.y
@@ -378,12 +373,12 @@ export default {
 
                 p5.image(
                   this.shieldIMG,
-                  params.CANVAS_OBSTACLES_CENTER_PIECE.x -
+                    params.CANVAS_OBSTACLES_CENTER_PIECE.x -
                     params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / 2,
-                  params.CANVAS_OBSTACLES_CENTER_PIECE.y -
+                    params.CANVAS_OBSTACLES_CENTER_PIECE.y -
                     params.CANVAS_OBSTACLES_CENTER_PIECE.r2 / 2,
-                  params.CANVAS_OBSTACLES_CENTER_PIECE.r1,
-                  params.CANVAS_OBSTACLES_CENTER_PIECE.r2
+                    params.CANVAS_OBSTACLES_CENTER_PIECE.r1,
+                    params.CANVAS_OBSTACLES_CENTER_PIECE.r2
                 );
               }
             });
@@ -401,7 +396,7 @@ export default {
               "LEADERBOARD",
               params.CANVAS_OBSTACLES_CENTER_PIECE.x,
               params.CANVAS_OBSTACLES_CENTER_PIECE.y -
-                params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / 8
+              params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / 8
             );
             if (leaderboard) {
               for (let index = 0; index < leaderboard.length; index++) {
@@ -413,14 +408,14 @@ export default {
                 p5.text(
                   `${index + 1}. ${username}`,
                   params.CANVAS_OBSTACLES_CENTER_PIECE.x -
-                    params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / (3 + 0.1 * index),
+                  params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / (3 + 0.1 * index),
                   params.CANVAS_OBSTACLES_CENTER_PIECE.y + 30 * index
                 );
                 p5.textAlign(p5.RIGHT);
                 p5.text(
                   `${leaderboard[index].score}`,
                   params.CANVAS_OBSTACLES_CENTER_PIECE.x +
-                    params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / (3 + 0.1 * index),
+                  params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / (3 + 0.1 * index),
                   params.CANVAS_OBSTACLES_CENTER_PIECE.y + 30 * index
                 );
               }

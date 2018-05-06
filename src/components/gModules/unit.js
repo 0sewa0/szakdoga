@@ -67,6 +67,8 @@ export default class Unit {
         }
         (p5.keyIsDown(32) && this.shieldCharge > 0 && this.shieldFull) ? this.shieldOn(): this.shieldOff();
 
+        this.velocity.x = (Math.abs(this.velocity.x) < 0.001) ? 0 : this.velocity.x
+        this.velocity.y = (Math.abs(this.velocity.y) < 0.001) ? 0 : this.velocity.y
         this.velocity.x *= params.UNIT_FRICTION;
         this.velocity.y *= params.UNIT_FRICTION;
         this.bodyPosition.add(this.velocity);

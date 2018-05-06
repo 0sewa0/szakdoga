@@ -51,7 +51,7 @@ io.sockets.on('connection', socket => {
     });
 
     socket.on('start', data => {
-        if(data.user != null && data.id != null && data.name != null && data.spawn != null && data.positionX != null && data.positionY != null && !findUser(data.user)) {
+        if(data != null && data.user != null && data.id != null && data.name != null && data.spawn != null && data.positionX != null && data.positionY != null && !findUser(data.user)) {
             players.push(new Player(data.id, data.user, data.name, data.spawn, data.positionX, data.positionY));
             availableSpawn.splice(availableSpawn.indexOf(data.spawn), 1);
         }
@@ -62,7 +62,7 @@ io.sockets.on('connection', socket => {
 
     socket.on('update', data => {
 
-        if(data.positionX != null && data.positionY != null && data.velocityX != null && data.velocityY != null && data.shield != null && data.score != null) {
+        if(data != null && data.positionX != null && data.positionY != null && data.velocityX != null && data.velocityY != null && data.shield != null && data.score != null && data.shots != null) {
             const player = findActivePlayerById(socket.id);
             if (player) {
                 player.positionX = data.positionX;
@@ -96,16 +96,16 @@ io.sockets.on('connection', socket => {
                         }
                     });
                 }
+                io.sockets.emit('heartbeat', gameState)
             }
         }
         else {
             error(socket, 'Error: update event => Invalid payload: ' + data +'\nFrom socket ' + socket.id);
         }
-        io.sockets.emit('heartbeat', gameState)
     });
 
     socket.on('enemyHit', data => {
-        if(data.targetId != null) {
+        if(data != null && data.targetId != null) {
             const shotPlayer = findActivePlayerById(data.targetId);
             if(shotPlayer != null) {
                 shotPlayer.score = 0;

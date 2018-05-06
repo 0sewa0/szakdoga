@@ -70,8 +70,7 @@ export default class Unit {
         this.velocity.x *= params.UNIT_FRICTION;
         this.velocity.y *= params.UNIT_FRICTION;
         this.bodyPosition.add(this.velocity);
-        this.boundaryCheck();
-
+        return ( this.boundaryCheck() || this.velocity.x != 0 || this.velocity.y != 0 || keysDown != 0) ? true : false;
     }
 
     /**
@@ -130,17 +129,22 @@ export default class Unit {
         -   Is the player touching any of the obstacles? => Prevents the player to enter it (however it can happen, but then the player can easly leave it)
     */
     boundaryCheck() {
+        let change = false;
         if (this.bodyPosition.x > params.CANVAS_MAP_X) {
             this.bodyPosition.x = params.CANVAS_MAP_X;
+            change = true;
         }
         if (this.bodyPosition.x < -params.CANVAS_MAP_X) {
             this.bodyPosition.x = -params.CANVAS_MAP_X;
+            change = true;
         }
         if (this.bodyPosition.y > params.CANVAS_MAP_Y) {
             this.bodyPosition.y = params.CANVAS_MAP_Y;
+            change = true;
         }
         if (this.bodyPosition.y < -params.CANVAS_MAP_Y) {
             this.bodyPosition.y = -params.CANVAS_MAP_Y;
+            change = true;
         }
         params.CANVAS_OBSTACLES.forEach(obstacle => {
             if (this.bodyPosition.x > obstacle.x1 - params.UNIT_RADIUS + 10 &&
@@ -148,10 +152,11 @@ export default class Unit {
                 this.bodyPosition.y < obstacle.y1 + params.UNIT_RADIUS - 10 &&
                 this.bodyPosition.y > obstacle.y2 - params.UNIT_RADIUS + 10) {
                 //This 'line' of code makes it possible that when you touch the border of an obstacle, it will stop you while having a smooth rubber like effect
-                    (this.bodyPosition.x < obstacle.x1) ? this.bodyPosition.x = p5.lerp(this.bodyPosition.x, obstacle.x1 - params.UNIT_RADIUS, 0.2) :
+                    const tmp = (this.bodyPosition.x < obstacle.x1) ? this.bodyPosition.x = p5.lerp(this.bodyPosition.x, obstacle.x1 - params.UNIT_RADIUS, 0.2) :
                     (this.bodyPosition.x > obstacle.x4) ? this.bodyPosition.x = p5.lerp(this.bodyPosition.x, obstacle.x4 + params.UNIT_RADIUS, 0.2) :
                     (this.bodyPosition.y > obstacle.y1) ? this.bodyPosition.y = p5.lerp(this.bodyPosition.y, obstacle.y1 + params.UNIT_RADIUS, 0.2) :
                     (this.bodyPosition.y < obstacle.y2) ? this.bodyPosition.y = p5.lerp(this.bodyPosition.y, obstacle.y2 - params.UNIT_RADIUS, 0.2) : false;
+                    change = (tmp) ? true : false;
             }
         });
         const distance_from_center = this.bodyPosition.dist(p5.createVector(params.CANVAS_OBSTACLES_CENTER_PIECE.x, params.CANVAS_OBSTACLES_CENTER_PIECE.y));
@@ -159,7 +164,9 @@ export default class Unit {
             const angle = this.bodyPosition.heading();
             const push = p5.createVector(1 * Math.cos(angle), 1 * Math.sin(angle)).mult(3 * params.CANVAS_OBSTACLES_CENTER_PIECE.r1 / 5);
             this.bodyPosition = this.bodyPosition.lerp(push, 0.2);
+            change = true;
         }
+        return change;
     }
 
     /**

@@ -18,7 +18,7 @@ export const UNIT_SHIELD_STROKE_WEIGHT = 10;
 
 //SHOT parameters
 export const SHOT_RADIUS = 7;
-export const SHOT_SPEED = 20;
+export const SHOT_SPEED = 15;
 export const SHOT_BASE_COLOR = 'rgb(181, 232, 144)';//#b5e890
 export const SHOT_STROKE_WEIGHT = 1;
 export const SHOT_COOLDOWN = 100; // The player can only shoot once in a period of time

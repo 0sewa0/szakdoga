@@ -83,7 +83,13 @@ export default {
               this.$store.dispatch("goHome", "Couldn't reach the server!");
               this.$store.commit("setLoading", false);
             });
-
+            socket.on("event_error", error => {
+              console.log(error);
+              socket.close();
+              this.$destroy;
+              this.$store.dispatch("goHome", 'Sorry something gone wrong.');
+              this.$store.commit("setLoading", false);
+            });
             socket.on("goHome", data => {
               socket.close();
               this.$destroy;
@@ -233,14 +239,24 @@ export default {
               }
 
               p5.translate(p5.width / 2, p5.height / 2); // Translates the canvas so the player is always in the middle of the screen (the other translate* command is also needed for this to happen)
-              p5.scale((p5.width * p5.height / (p5.width + p5.height))/500); // Scales (zooms in) increases the sice of everyhting after the this
+              p5.scale((p5.width * p5.height / (p5.width + p5.height))/450); // Scales (zooms in) increases the sice of everyhting after the this
               p5.translate(
                 -playerUnit.bodyPosition.x,
                 -playerUnit.bodyPosition.y
               ); // *
               p5.showBorders(); //Draws borders
               p5.showObstacles(); //Draws obstacles
-              if (inGame) playerUnit.move(); // Moves the player unit according to the pushed buttons.
+              if (inGame && playerUnit.move() || playerUnit.shots.length != 0) {
+                socket.emit("update", {
+                  positionX: playerUnit.bodyPosition.x,
+                  positionY: playerUnit.bodyPosition.y,
+                  velocityX: playerUnit.velocity.x,
+                  velocityY: playerUnit.velocity.y,
+                  shield: playerUnit.shield,
+                  score: playerUnit.score,
+                  shots: p5.parseShots()
+                });
+              }// Moves the player unit according to the pushed buttons.
               //Iterate over all the enemy units
               enemyUnits.forEach(enemy => {
                 //Iterate over all shots of the player unit
@@ -254,7 +270,7 @@ export default {
                           targetId: enemy.id
                         });
                       }
-                      shot.ttl = 1; //Removes the shot from the array (consequently removeing it from the game)
+                      shot.ttl = 1;
                     }
                   });
                   if (playerUnit.touching(enemy)) {
@@ -286,17 +302,6 @@ export default {
                 }
               });
               playerUnit.show(inGame); // Draws the player unit
-              if (inGame) {
-                socket.emit("update", {
-                  positionX: playerUnit.bodyPosition.x,
-                  positionY: playerUnit.bodyPosition.y,
-                  velocityX: playerUnit.velocity.x,
-                  velocityY: playerUnit.velocity.y,
-                  shield: playerUnit.shield,
-                  score: playerUnit.score,
-                  shots: p5.parseShots()
-                });
-              }
             }
           };
 
@@ -318,7 +323,6 @@ export default {
             let shots_to_send = [];
             playerUnit.shots.forEach(shot => {
               shots_to_send.push({
-                user: shot.user,
                 id: shot.id,
                 positionX: shot.position.x,
                 positionY: shot.position.y,

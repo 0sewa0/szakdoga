@@ -26,7 +26,7 @@ const gameState = {
 
 
 //Game server logic
-setInterval(() => io.sockets.emit('heartbeat', gameState), 5);
+//setInterval(() => io.sockets.emit('heartbeat', gameState), 5);
 
 io.sockets.on('connection', socket => {
     console.log(`New Connection: ${socket.id}`);
@@ -44,7 +44,6 @@ io.sockets.on('connection', socket => {
                 id: socket.id,
                 forGuests: data,
                 spawnPoint: availableSpawn[Math.floor(Math.random() * availableSpawn.length)],
-                guestNumber: guestCounter
             });
         } else {
             socket.emit('goHome', "Already in game!");
@@ -52,58 +51,91 @@ io.sockets.on('connection', socket => {
     });
 
     socket.on('start', data => {
-        players.push(new Player(data.id, data.user, data.name, data.spawn, data.positionX, data.positionY));
-        availableSpawn.splice(availableSpawn.indexOf(data.spawn), 1);
+        if(data.user != null && data.id != null && data.name != null && data.spawn != null && data.positionX != null && data.positionY != null && !findUser(data.user)) {
+            players.push(new Player(data.id, data.user, data.name, data.spawn, data.positionX, data.positionY));
+            availableSpawn.splice(availableSpawn.indexOf(data.spawn), 1);
+        }
+        else {
+            error(socket, 'Error: start event => Invalid payload: ' + data +'\nFrom socket ' + socket.id);
+        }
     });
 
     socket.on('update', data => {
-        const player = findActivePlayerById(socket.id);
 
-        if (player) {
-            player.positionX = data.positionX;
-            player.positionY = data.positionY;
-            player.velocityX = data.velocityX;
-            player.velocityY = data.velocityY;
-            player.shield = data.shield;
-            player.score = data.score;
-            if(player.score > player.bestScore) {
-                player.bestScore = player.score;
-                checkLeaderboard(player);
-            }
-            if (data.shots.length > 0) {
-                data.shots.forEach(shot => {
-                    const oldShot = shots.indexOf(shots.find(s => (s.id == shot.id && s.user == shot.user)));
-                    if (shot.ttl <= 0) {
-                        shots.splice(oldShot, 1);
-                    } else if (oldShot >= 0) {
-                        shots[oldShot] = shot;
-                    } else {
-                        shots.push(new Shot(shot.user, shot.id, shot.positionX, shot.positionY, shot.velocityX, shot.velocityY, shot.ttl));
-                    }
-                });
+        if(data.positionX != null && data.positionY != null && data.velocityX != null && data.velocityY != null && data.shield != null && data.score != null) {
+            const player = findActivePlayerById(socket.id);
+            if (player) {
+                player.positionX = data.positionX;
+                player.positionY = data.positionY;
+                player.velocityX = data.velocityX;
+                player.velocityY = data.velocityY;
+                player.shield = data.shield;
+                player.score = data.score;
+                if(player.score > player.bestScore) {
+                    player.bestScore = player.score;
+                    checkLeaderboard(player);
+                }
+                if (data.shots.length > 0) {
+                    data.shots.forEach(shot => {
+                        if(shot.id != null && shot.positionX != null && shot.velocityX != null && shot.velocityY != null && shot.ttl != null) {
+                            const oldShot = shots.indexOf(shots.find(s => (s.id == shot.id && s.user == player.user)));
+                            if (oldShot >= 0 && shot.ttl <= 0) {
+                                shot.user = player.user;
+                                shots[oldShot] = shot;
+                                io.sockets.emit('heartbeat', gameState)
+                                shots.splice(oldShot, 1);
+                            } else if (oldShot >= 0) {
+                                shot.user = player.user;
+                                shots[oldShot] = shot;
+                            } else {
+                                shots.push(new Shot(player.user, shot.id, shot.positionX, shot.positionY, shot.velocityX, shot.velocityY, shot.ttl));
+                            }
+                        }
+                        else {
+                            error(socket, 'Error: update event => Invalid shot payload: ' + shot  +'\nFrom socket ' + socket.id);
+                        }
+                    });
+                }
             }
         }
+        else {
+            error(socket, 'Error: update event => Invalid payload: ' + data +'\nFrom socket ' + socket.id);
+        }
+        io.sockets.emit('heartbeat', gameState)
     });
 
     socket.on('enemyHit', data => {
-        const shotPlayer = findActivePlayerById(data.targetId);
-        if(shotPlayer != undefined) {
-            shotPlayer.score = 0;
-            shotPlayers.push(shotPlayer);
-            removeActivePlayer(shotPlayer);
-            io.to(data.targetId).emit('gotHit', {
-                shooterId: socket.id
-            });
-            io.sockets.emit('playerLeft', {
-                playerId: data.targetId
-            });
+        if(data.targetId != null) {
+            const shotPlayer = findActivePlayerById(data.targetId);
+            if(shotPlayer != null) {
+                shotPlayer.score = 0;
+                shotPlayers.push(shotPlayer);
+                removeActivePlayer(shotPlayer);
+                io.to(data.targetId).emit('gotHit', {
+                    shooterId: socket.id
+                });
+                io.sockets.emit('playerLeft', {
+                    playerId: data.targetId
+                });
+            }
+            else {
+                error(socket, 'Error: enemyHit event => No active player corresponding to targetId: ' + data.targetId +"\nFrom socket: "+ socket.id);
+            }
         }
+        else {
+            error(socket, 'Error: enemyHit event => Invalid payload: ' + data +"\nFrom socket: "+ socket.id);
+         }
     });
 
     socket.on('respawn', () => {
         const respawn = findShotPlayerById(socket.id);
-        removeShotPlayer(respawn);
-        players.push(respawn);
+        if(respawn) {
+            removeShotPlayer(respawn);
+            players.push(respawn);
+        }
+        else {
+            error(socket, 'Error: respawn event => No inactive player corresponding to socket: ' + socket.id);
+        }
     });
 
     socket.on('disconnect', () => {
@@ -173,4 +205,9 @@ checkLeaderboard = (player) => {
 findUser = (user) => {
     const index = players.findIndex( p => p.user == user);
     return (index != -1) ? true : false;
+}
+
+error = (socket, message) => {
+    console.log(message);
+    socket.emit("event_error", message);
 }
